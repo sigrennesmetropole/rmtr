@@ -1,2 +1,2 @@
 # rctr
-module rctr pour georchestra
+rctr module for geOrchestra
