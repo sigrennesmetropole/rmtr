@@ -1,0 +1,20 @@
+[{
+    "id": "rctr_0",
+    "enabled": true,
+    "name": "RCTR",
+    "options": {
+        "target": "tbar_3"
+    },
+    "title": {
+        "en": "RCTR",
+        "fr": "RCTR",
+        "es": "RCTR",
+        "de": "RCTR"
+    },
+    "description": {
+        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux"
+    }
+}]

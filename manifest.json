@@ -1,0 +1,32 @@
+{
+    "js": [
+        "js/main.js"
+    ],
+    "css": [
+        "css/main.css"
+    ],
+    "default_options": {
+        "target": "tbar_11",
+        "graphicStyle": {
+            "graphicName": "cross",
+            "pointRadius": 16,
+            "strokeColor": "fuchsia",
+            "strokeWidth": 2,
+            "fillOpacity": 0
+        }
+    },
+    "i18n": {
+        "en": {
+            "addon_rctr_": "Sample message in English"
+        },
+        "es": {
+            "addon_rctr_": "mensaje de la muestra en español"
+        },
+        "fr": {
+            "addon_rctr_": "Exemple de message en français"
+        },
+        "de": {
+            "addon_rctr_": "Beispielmeldungin Deutsch"
+        }
+    }
+}
