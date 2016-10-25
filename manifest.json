@@ -6,14 +6,7 @@
         "css/main.css"
     ],
     "default_options": {
-        "target": "tbar_11",
-        "graphicStyle": {
-            "graphicName": "cross",
-            "pointRadius": 16,
-            "strokeColor": "fuchsia",
-            "strokeWidth": 2,
-            "fillOpacity": 0
-        }
+
     },
     "i18n": {
         "en": {

@@ -1,7 +1,7 @@
 RCTR
 ======
 
-Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux.
+Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux de Rennes Métropole.
 
 Authors: @fvanderbiest
 

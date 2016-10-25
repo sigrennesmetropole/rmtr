@@ -3,6 +3,18 @@
  */
 Ext.namespace("GEOR.Addons");
 
+/*
+
+TODO:
+ * chargement / déchargement contexte avec addon
+ * charg / décharge couche dalles extraction
+ * fenetre avec grid
+ * outil selection ponctuelle
+ * formulaire pré-rempli
+ * template mail
+ * mailto
+*/
+
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
     /**
@@ -17,31 +29,37 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             this.components = this.target.insertButton(this.position, {
                 xtype: 'button',
                 tooltip: this.getTooltip(record),
-                iconCls: "addon-template",
-                handler: this._sampleHandler,
+                iconCls: "addon-rctr",
+                handler: this._handler,
                 scope: this
             });
             this.target.doLayout();
-
         } else {
             // create a menu item for the "tools" menu:
             this.item = new Ext.menu.CheckItem({
                 text: this.getText(record),
                 qtip: this.getQtip(record),
-                iconCls: "addon-template",
+                iconCls: "addon-rctr",
                 checked: false,
                 listeners: {
-                    "checkchange": this._sampleHandler,
+                    "checkchange": this._handler,
                     scope: this
                 }
             });
         }
     },
 
-    _sampleHandler: function() {
-        GEOR.helper.msg(this.options.title, this.tr("addon_rctr_"))
+    /**
+     * Method: handler
+     */
+    _handler: function() {
+        //GEOR.helper.msg(this.options.title, this.tr("addon_rctr_"));
+        
     },
 
+    /**
+     * Method: tr
+     */
     tr: function(str) {
         return OpenLayers.i18n(str);
     },
