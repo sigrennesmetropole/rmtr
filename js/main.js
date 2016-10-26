@@ -17,6 +17,9 @@ TODO:
 
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
+    window: null,
+    toggleGroup: '_rctr',
+
     /**
      * Method: init
      *
@@ -30,7 +33,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 xtype: 'button',
                 tooltip: this.getTooltip(record),
                 iconCls: "addon-rctr",
-                handler: this._handler,
+                handler: this._onCheckchange,
                 scope: this
             });
             this.target.doLayout();
@@ -42,19 +45,108 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 iconCls: "addon-rctr",
                 checked: false,
                 listeners: {
-                    "checkchange": this._handler,
+                    "checkchange": this._onCheckchange,
                     scope: this
                 }
             });
         }
+        this.window = new Ext.Window({
+            title: OpenLayers.i18n('rctr.window.title'),
+            width: 440,
+            height: 500,
+            closable: true,
+            closeAction: "hide",
+            resizable: false,
+            border: false,
+            layout: 'fit',
+            items: {
+                layout: 'border',
+                border: false,
+                items: [{
+                    xtype: 'toolbar',
+                    region: 'north',
+                    border: false,
+                    height: 40,
+                    items: [
+                        new GeoExt.Action({
+                            control: new OpenLayers.Control(), // FIXME
+                            map: this.map,
+                            // button options
+                            toggleGroup: this.toggleGroup,
+                            allowDepress: false,
+                            pressed: false,
+                            tooltip: this.tr(""),
+                            iconCls: "gx-featureediting-draw-point",
+                            text: this.tr("annotation.point"),
+                            iconAlign: 'top',
+                            // check item options
+                            group: this.toggleGroup,
+                            checked: false
+                        }),'-',
+                        new Ext.Action({
+                            //handler: this.showForm,
+                            scope: this,
+                            text: OpenLayers.i18n('rctr.show.form'),
+                            //iconCls: "gx-featureediting-export",
+                            iconAlign: 'top',
+                            tooltip: OpenLayers.i18n('rctr.show.form.tip')
+                        })
+                    ]
+                }, {
+                    region: 'center',
+                    border: false,
+                    xtype: 'panel' // grid
+                }]
+            }
+        });
     },
 
     /**
-     * Method: handler
+     * Method: _onCheckchange
+     * Callback on checkbox state changed
      */
-    _handler: function() {
-        //GEOR.helper.msg(this.options.title, this.tr("addon_rctr_"));
-        
+    _onCheckchange: function(item, checked) {
+        if (checked) {
+            this.window.show();
+            this._setUp();
+            /*
+            this.window.alignTo(
+                Ext.get(this.map.div),
+                "t-t",
+                [0, 5],
+                true
+            );*/
+        } else {
+            this.window.hide();
+        }
+    },
+
+
+    /**
+     * Method: _setUp
+     * add layers from a given context to the map
+     */
+    _setUp: function() {
+        var failure = function() {
+            GEOR.util.errorDialog({
+                msg: this.tr("rctr.error.restoring.context")
+            });
+        };
+        OpenLayers.Request.GET({
+            url: this.options.wmc,
+            success: function(response) {
+                try {
+                    var s = response.responseXML || response.responseText;
+                    // add (not remove) layers to map
+                    // without zooming to context bounds:
+                    GEOR.wmc.read(s, false, false);
+                } catch(err) {
+                    failure.call(this);
+                }
+            },
+            failure: failure,
+            scope: this
+        });
     },
 
     /**
@@ -70,7 +162,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     destroy: function() {
         //Place addon specific destroy here
-
         GEOR.Addons.Base.prototype.destroy.call(this);
     }
 });

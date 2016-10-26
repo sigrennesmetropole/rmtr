@@ -6,7 +6,7 @@
         "css/main.css"
     ],
     "default_options": {
-
+        "wmc": "context/default.wmc"
     },
     "i18n": {
         "en": {

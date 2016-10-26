@@ -3,7 +3,8 @@
     "enabled": true,
     "name": "RCTR",
     "options": {
-        "target": "tbar_12"
+        "target": "tbar_12",
+        "wmc": "context/cadastre.wmc"
     },
     "title": {
         "en": "RCTR",
