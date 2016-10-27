@@ -6,8 +6,6 @@ Ext.namespace("GEOR.Addons");
 /*
 
 TODO:
- * chargement / déchargement contexte avec addon
- * charg / décharge couche dalles extraction
  * fenetre avec grid
  * outil selection ponctuelle
  * formulaire pré-rempli
@@ -19,6 +17,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
     toggleGroup: '_rctr',
+    records: null,
 
     /**
      * Method: init
@@ -27,6 +26,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * record - {Ext.data.record} a record with the addon parameters
      */
     init: function(record) {
+        this.records = [];
         if (this.target) {
             // create a button to be inserted in toolbar:
             this.components = this.target.insertButton(this.position, {
@@ -97,6 +97,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     border: false,
                     xtype: 'panel' // grid
                 }]
+            },
+            listeners: {
+                'hide': this._tearDown,
+                scope: this
             }
         });
     },
@@ -106,7 +110,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * Callback on checkbox state changed
      */
     _onCheckchange: function(item, checked) {
-        if (checked) {
+        if (checked && !this.window.isVisible()) {
             this.window.show();
             this._setUp();
             /*
@@ -127,24 +131,66 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * add layers from a given context to the map
      */
     _setUp: function() {
-        var failure = function() {
-            GEOR.util.errorDialog({
-                msg: this.tr("rctr.error.restoring.context")
-            });
-        };
-        OpenLayers.Request.GET({
-            url: this.options.wmc,
-            success: function(response) {
-                try {
-                    var s = response.responseXML || response.responseText;
-                    // add (not remove) layers to map
-                    // without zooming to context bounds:
-                    GEOR.wmc.read(s, false, false);
-                } catch(err) {
-                    failure.call(this);
-                }
+        // add carroyage layer:
+        this._addLayer(this.options.layer, false);
+        Ext.each(this.options.baselayers, function(layer) {
+            // load WMS baselayers (GWC compatible)
+            this._addLayer(layer, true);
+        }, this);
+    },
+
+    /**
+     * Method: _tearDown
+     * remove layers from the map
+     */
+    _tearDown: function() {
+        Ext.each(this.records, function(r) {
+            this.mapPanel.layers.remove(r);
+        }, this);
+        this.records = [];
+    },
+
+    /**
+     * Method: _addLayer
+     * 
+     */
+    _addLayer: function(cfg, isBaseLayer) {
+        var layerOptions = isBaseLayer ? {
+            gutter: 0,
+            transitionEffect: 'resize',
+            tileSize: new OpenLayers.Size(256, 256)
+        } : {};
+        var u = GEOR.util.splitURL(cfg.service);
+        var layerStore = GEOR.ows.WMSCapabilities({
+            storeOptions: {
+                url: u.serviceURL,
+                layerOptions: layerOptions
             },
-            failure: failure,
+            baseParams: u.params,
+            success: function(store) {
+                // extract layer which is expected
+                var record = store.queryBy(function(r) {
+                    return (r.get('name') == cfg.name);
+                }).first();
+                if (record) {
+                    // set opaque status for layer order:
+                    if (isBaseLayer) {
+                        record.set("opaque", true);
+                    }
+                    // enforce format:
+                    if (cfg.hasOwnProperty("format")) {
+                        record.getLayer().params.FORMAT = cfg.format;
+                    }
+                    // keep a reference to record:
+                    this.records.push(record);
+                    // add to map:
+                    this.mapPanel.layers.addSorted(record);
+                }
+                // else silently ignore it
+            },
+            failure: function() {
+                // silently ignore it
+            },
             scope: this
         });
     },

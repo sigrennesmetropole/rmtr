@@ -4,7 +4,20 @@
     "name": "RCTR",
     "options": {
         "target": "tbar_12",
-        "wmc": "context/cadastre.wmc"
+        "layer": {
+            "service": "https://sdi.georchestra.org/geoserver/wms",
+            "name": "geor:sdi",
+            "format": "image/png"
+        },
+        "baselayers": [{
+            "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",
+            "name": "dem:altitude",
+            "format": "image/jpeg"
+        },{
+            "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",
+            "name": "unearthedoutdoors:truemarble",
+            "format": "image/jpeg"
+        }]
     },
     "title": {
         "en": "RCTR",

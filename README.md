@@ -14,26 +14,33 @@ Example addon config:
     "id": "rctr_0",
     "name": "RCTR",
     "options": {
-        "target": "tbar_11",
-        "graphicStyle": {
-            "graphicName": "cross",
-            "pointRadius": 16,
-            "strokeColor": "fuchsia",
-            "strokeWidth": 2,
-            "fillOpacity": 0
-        }
+        "target": "tbar_12",
+        "layer": {
+            "service": "https://portail-test.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
+            "name": "toposurf_rctr_carroyage"
+            "format": "image/png"
+        },
+        "baselayers": [{
+            "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",
+            "name": "dem:altitude",
+            "format": "image/jpeg"
+        },{
+            "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",
+            "name": "unearthedoutdoors:truemarble",
+            "format": "image/jpeg"
+        }]
     },
     "title": {
-        "en": "Addon title in English",
-        "fr": "Titre de l'extension en français",
-        "es": "Titular en español",
-        "de": "Titel"
+        "en": "RCTR",
+        "fr": "RCTR",
+        "es": "RCTR",
+        "de": "RCTR"
     },
     "description": {
-        "en": "Description in English",
-        "fr": "Description en Français",
-        "de": "Bezeichnung",
-        "es": "Descripción en español"
+        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
+        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux"
     }
 }
 ```
