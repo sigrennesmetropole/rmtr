@@ -17,7 +17,9 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
     toggleGroup: '_rctr',
+    layerRecord: null,
     records: null,
+    _up: false,
 
     /**
      * Method: init
@@ -50,6 +52,60 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 }
             });
         }
+    },
+
+    /**
+     * Method: _onCheckchange
+     * Callback on checkbox state changed
+     */
+    _onCheckchange: function(item, checked) {
+        if (checked && !this._up) {
+            this._setUp();
+            /*
+            this.window.alignTo(
+                Ext.get(this.map.div),
+                "t-t",
+                [0, 5],
+                true
+            );*/
+        } else {
+            this.window.hide();
+        }
+    },
+
+
+    /**
+     * Method: _setUp
+     * add layers from a given context to the map
+     */
+    _setUp: function() {
+        this._up = true;
+        // add carroyage layer:
+        this._addLayer(this.options.layer, false, this._createWindow);
+        Ext.each(this.options.baselayers, function(layer) {
+            // load WMS baselayers (GWC compatible)
+            this._addLayer(layer, true);
+        }, this);
+    },
+
+    /**
+     * Method: _tearDown
+     * remove layers from the map
+     */
+    _tearDown: function() {
+        this._up = false;
+        this.mapPanel.layers.remove(this.layerRecord);
+        Ext.each(this.records, function(r) {
+            this.mapPanel.layers.remove(r);
+        }, this);
+        this.records = [];
+    },
+
+    /**
+     * Method: _createWindow
+     * called when the layer record is available
+     */
+    _createWindow: function() {
         this.window = new Ext.Window({
             title: OpenLayers.i18n('rctr.window.title'),
             width: 440,
@@ -69,7 +125,11 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     height: 40,
                     items: [
                         new GeoExt.Action({
-                            control: new OpenLayers.Control(), // FIXME
+                            control: new OpenLayers.Control.WMSGetFeatureInfo({
+                                layers: [this.layerRecord.getLayer()],
+                                maxFeatures: GEOR.config.MAX_FEATURES,
+                                infoFormat: 'application/vnd.ogc.gml'
+                            }),
                             map: this.map,
                             // button options
                             toggleGroup: this.toggleGroup,
@@ -103,58 +163,14 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 scope: this
             }
         });
-    },
-
-    /**
-     * Method: _onCheckchange
-     * Callback on checkbox state changed
-     */
-    _onCheckchange: function(item, checked) {
-        if (checked && !this.window.isVisible()) {
-            this.window.show();
-            this._setUp();
-            /*
-            this.window.alignTo(
-                Ext.get(this.map.div),
-                "t-t",
-                [0, 5],
-                true
-            );*/
-        } else {
-            this.window.hide();
-        }
-    },
-
-
-    /**
-     * Method: _setUp
-     * add layers from a given context to the map
-     */
-    _setUp: function() {
-        // add carroyage layer:
-        this._addLayer(this.options.layer, false);
-        Ext.each(this.options.baselayers, function(layer) {
-            // load WMS baselayers (GWC compatible)
-            this._addLayer(layer, true);
-        }, this);
-    },
-
-    /**
-     * Method: _tearDown
-     * remove layers from the map
-     */
-    _tearDown: function() {
-        Ext.each(this.records, function(r) {
-            this.mapPanel.layers.remove(r);
-        }, this);
-        this.records = [];
+        this.window.show();
     },
 
     /**
      * Method: _addLayer
      * 
      */
-    _addLayer: function(cfg, isBaseLayer) {
+    _addLayer: function(cfg, isBaseLayer, callback) {
         var layerOptions = isBaseLayer ? {
             gutter: 0,
             transitionEffect: 'resize',
@@ -176,15 +192,18 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     // set opaque status for layer order:
                     if (isBaseLayer) {
                         record.set("opaque", true);
+                        // keep a reference to record:
+                        this.records.push(record);
+                    } else {
+                        this.layerRecord = record;
                     }
                     // enforce format:
                     if (cfg.hasOwnProperty("format")) {
                         record.getLayer().params.FORMAT = cfg.format;
                     }
-                    // keep a reference to record:
-                    this.records.push(record);
                     // add to map:
                     this.mapPanel.layers.addSorted(record);
+                    callback && callback.call(this);
                 }
                 // else silently ignore it
             },
