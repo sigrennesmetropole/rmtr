@@ -7,7 +7,11 @@
         "layer": {
             "service": "https://sdi.georchestra.org/geoserver/wms",
             "name": "geor:sdi",
-            "format": "image/png"
+            "format": "image/png",
+            "fields": {
+                "id": "name",
+                "label": "title"
+            }
         },
         "baselayers": [{
             "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",

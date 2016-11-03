@@ -4,10 +4,7 @@
 Ext.namespace("GEOR.Addons");
 
 /*
-
 TODO:
- * fenetre avec grid
- * outil selection ponctuelle
  * formulaire pré-rempli
  * template mail
  * mailto
@@ -16,10 +13,12 @@ TODO:
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
-    toggleGroup: '_rctr',
+    toggleGroup: "_rctr",
     layerRecord: null,
     records: null,
     _up: false,
+    _vectorLayer: null,
+    _store: null,
 
     /**
      * Method: init
@@ -29,10 +28,31 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     init: function(record) {
         this.records = [];
+
+        this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_rctr_"+record.get("id"), {
+            displayInLayerSwitcher: false,
+            styleMap: GEOR.util.getStyleMap(),
+            rendererOptions: {
+                zIndexing: true
+            }
+        });
+        this._store = new GeoExt.data.FeatureStore({
+            layer: this._vectorLayer,
+            fields: [
+                this.options.layer.fields.id,
+                this.options.layer.fields.label
+            ],
+            initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER
+            /*
+                GeoExt.data.FeatureStore.LAYER_TO_STORE :
+                GeoExt.data.FeatureStore.LAYER_TO_STORE|GeoExt.data.FeatureStore.STORE_TO_LAYER
+            */
+        });
+
         if (this.target) {
             // create a button to be inserted in toolbar:
             this.components = this.target.insertButton(this.position, {
-                xtype: 'button',
+                xtype: "button",
                 tooltip: this.getTooltip(record),
                 iconCls: "addon-rctr",
                 handler: this._onCheckchange,
@@ -80,6 +100,8 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _setUp: function() {
         this._up = true;
+        // add vector layer:
+        this.map.addLayer(this._vectorLayer);
         // add carroyage layer:
         this._addLayer(this.options.layer, false, this._createWindow);
         Ext.each(this.options.baselayers, function(layer) {
@@ -94,6 +116,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _tearDown: function() {
         this._up = false;
+        this.map.removeLayer(this._vectorLayer);
         this.mapPanel.layers.remove(this.layerRecord);
         Ext.each(this.records, function(r) {
             this.mapPanel.layers.remove(r);
@@ -107,59 +130,115 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _createWindow: function() {
         this.window = new Ext.Window({
-            title: OpenLayers.i18n('rctr.window.title'),
+            title: this.tr("rctr.window.title"),
             width: 440,
             height: 500,
             closable: true,
             closeAction: "hide",
             resizable: false,
             border: false,
-            layout: 'fit',
+            layout: "fit",
             items: {
-                layout: 'border',
+                layout: "border",
                 border: false,
                 items: [{
-                    xtype: 'toolbar',
-                    region: 'north',
+                    xtype: "toolbar",
+                    region: "north",
                     border: false,
                     height: 40,
                     items: [
                         new GeoExt.Action({
                             control: new OpenLayers.Control.WMSGetFeatureInfo({
                                 layers: [this.layerRecord.getLayer()],
-                                maxFeatures: GEOR.config.MAX_FEATURES,
-                                infoFormat: 'application/vnd.ogc.gml'
+                                maxFeatures: 1,
+                                infoFormat: "application/vnd.ogc.gml",
+                                eventListeners: {
+                                    "beforegetfeatureinfo": function() {
+                                        OpenLayers.Element.removeClass(this.map.viewPortDiv, "olDrawBox");
+                                    },
+                                    "getfeatureinfo": function(o) {
+                                        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
+                                        if (!o.features || !o.features[0]) {
+                                            return;
+                                        }
+                                        // append features to store:
+                                        this._store.loadData(o.features, true);
+                                    },
+                                    "activate": function() {
+                                        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
+                                    },
+                                    "deactivate": function() {
+                                        OpenLayers.Element.removeClass(this.map.viewPortDiv, "olDrawBox");
+                                    },
+                                    scope: this
+                                }
                             }),
                             map: this.map,
                             // button options
                             toggleGroup: this.toggleGroup,
                             allowDepress: true,
-                            pressed: false,
+                            pressed: true,
                             tooltip: this.tr(""),
                             iconCls: "gx-featureediting-draw-point",
                             text: this.tr("annotation.point"),
-                            iconAlign: 'top',
+                            iconAlign: "top",
                             // check item options
                             group: this.toggleGroup,
                             checked: false
-                        }),'-',
+                        }),"-",
                         new Ext.Action({
                             //handler: this.showForm,
                             scope: this,
-                            text: OpenLayers.i18n('rctr.show.form'),
+                            text: this.tr("rctr.show.form"),
                             //iconCls: "gx-featureediting-export",
-                            iconAlign: 'top',
-                            tooltip: OpenLayers.i18n('rctr.show.form.tip')
+                            iconAlign: "top",
+                            tooltip: this.tr("rctr.show.form.tip")
                         })
                     ]
                 }, {
-                    region: 'center',
+                    region: "center",
                     border: false,
-                    xtype: 'panel' // grid
+                    layout: "fit",
+                    items: [{
+                        xtype: "grid",
+                        store: this._store,
+                        frame: false,
+                        viewConfig: {
+                            forceFit: true
+                        },
+                        columns: [{
+                            header: this.tr("rctr.grid.id"),
+                            dataIndex: this.options.layer.fields.id,
+                            width: 40 // TODO: config for this ?
+                        }, {
+                            header: this.tr("rctr.grid.label"),
+                            dataIndex: this.options.layer.fields.label
+                        }],
+                        bbar: ['->', {
+                            text: this.tr("rctr.grid.remove"),
+                            tooltip: this.tr("rctr.grid.remove.tip"),
+                            handler: function(btn) {
+                                var grid = btn.ownerCt.ownerCt,
+                                    sm = grid.getSelectionModel();
+                                this._store.remove(sm.getSelected());
+                            },
+                            scope: this
+                        }],
+                        listeners: {
+                            "beforedestroy": function() {
+                                this._vectorLayer.destroyFeatures();
+                                this.selModel.unbind();
+                                // this deactivates Feature handler,
+                                // and moves search_results layer back to normal z-index
+                                return true;
+                            },
+                            scope: this
+                        }
+                    }]
                 }]
             },
             listeners: {
-                'hide': this._tearDown,
+                "hide": this._tearDown,
                 scope: this
             }
         });
@@ -174,7 +253,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         // TODO: check layer is not already loaded
         var layerOptions = isBaseLayer ? {
             gutter: 0,
-            transitionEffect: 'resize',
+            transitionEffect: "resize",
             tileSize: new OpenLayers.Size(256, 256)
         } : {};
         var u = GEOR.util.splitURL(cfg.service);
@@ -187,7 +266,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             success: function(store) {
                 // extract layer which is expected
                 var record = store.queryBy(function(r) {
-                    return (r.get('name') == cfg.name);
+                    return (r.get("name") == cfg.name);
                 }).first();
                 if (record) {
                     // set opaque status for layer order:

@@ -18,7 +18,11 @@ Example addon config:
         "layer": {
             "service": "https://portail-test.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
             "name": "toposurf_rctr_carroyage"
-            "format": "image/png"
+            "format": "image/png",
+            "fields": {
+                "id": "id_case",
+                "label": "cases_200"
+            }
         },
         "baselayers": [{
             "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",
