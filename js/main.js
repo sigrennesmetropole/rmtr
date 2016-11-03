@@ -133,7 +133,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             map: this.map,
                             // button options
                             toggleGroup: this.toggleGroup,
-                            allowDepress: false,
+                            allowDepress: true,
                             pressed: false,
                             tooltip: this.tr(""),
                             iconCls: "gx-featureediting-draw-point",
@@ -171,6 +171,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * 
      */
     _addLayer: function(cfg, isBaseLayer, callback) {
+        // TODO: check layer is not already loaded
         var layerOptions = isBaseLayer ? {
             gutter: 0,
             transitionEffect: 'resize',
@@ -227,6 +228,8 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     destroy: function() {
         //Place addon specific destroy here
+        this.window && this.window.close();
+        this._tearDown();
         GEOR.Addons.Base.prototype.destroy.call(this);
     }
 });
