@@ -213,6 +213,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * called when the layer record is available
      */
     _createWindow: function() {
+        var me = this;
         this.map.raiseLayer(this._vectorLayer, +1);
         this._cardPanel = new Ext.Panel();
         this.window = new Ext.Window({
@@ -344,7 +345,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         border: false,
                         //bodyStyle: "padding:1em 0 0 0;",
                         defaults: {
-                            anchor: "-1em"
+                            anchor: "-2em"
                         },
                         defaultType: "textfield",
                         labelSeparator: this.tr("labelSeparator"),
@@ -356,8 +357,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                                 var fp = this.ownerCt.ownerCt,
                                     form = fp.getForm();
                                 if (form.isValid()) {
-                                    var v = form.getValues();
-                                    console.log(v);
+                                    var v = form.getValues(),
+                                        ids = me._store.collect(me.options.layer.fields.id);
+                                    console.log(v, ids);
+                                    // mailto:xxx@yy.fr?cc=bb,gg&subject=zzz&body=aaa
                                 }
                             }
                         }]
@@ -405,6 +408,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             }, {
                 fieldLabel: this.tr("rctr.form.service"),
                 labelStyle: "font-weight:bold;",
+                value: "",
                 name: "service",
                 allowBlank: false
             }, {
