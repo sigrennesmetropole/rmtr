@@ -5,7 +5,6 @@ Ext.namespace("GEOR.Addons");
 
 /*
 TODO:
- * bugfix stylemap
  * card layout dans la fenetre (accueil / grid / form)
  * CSS
  * formulaire pré-rempli
@@ -46,6 +45,14 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 zIndexing: true
             }
         });
+        // create select feature control (used by selection model)
+        this._sfControl = new OpenLayers.Control.SelectFeature(this._vectorLayer, {
+            toggle: true,
+            multipleKey: Ext.isMac ? "metaKey" : "ctrlKey"
+        });
+        // we make sure that we cannot select the same object two times:
+        this._sfControl.handlers.feature.stopDown = true;
+
         this._store = new GeoExt.data.FeatureStore({
             layer: this._vectorLayer,
             fields: [
@@ -107,6 +114,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         this._addLayer(this.options.layer, false, this._createWindow);
         // add vector layer:
         this.map.addLayer(this._vectorLayer);
+        this.map.addControl(this._sfControl);
     },
 
     /**
@@ -116,6 +124,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _tearDown: function() {
         this._up = false;
         this.map.removeLayer(this._vectorLayer);
+        this.map.removeControl(this._sfControl);
         this.mapPanel.layers.remove(this.layerRecord);
         Ext.each(this.records, function(r) {
             this.mapPanel.layers.remove(r);
@@ -128,6 +137,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * called when the layer record is available
      */
     _createWindow: function() {
+        this.map.raiseLayer(this._vectorLayer, +1);
         this.window = new Ext.Window({
             title: this.tr("rctr.window.title"),
             width: 440,
@@ -160,6 +170,24 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                                         if (!o.features || !o.features[0]) {
                                             return;
                                         }
+                                        // reproject features if needed
+                                        var r =  /.+srsName=\"(.+?)\".+/.exec(o.text);
+                                        if (r && r[1]) {
+                                            var srsString = r[1],
+                                                srsName = srsString.replace(/.+[#:\/](\d+)$/, "EPSG:$1");
+                                            if (this.map.getProjection() !== srsName) {
+                                                var sourceSRS = new OpenLayers.Projection(srsName),
+                                                    destSRS = this.map.getProjectionObject();
+                                                Ext.each(o.features, function(f) {
+                                                    if (f.geometry && !!f.geometry.transform) {
+                                                        f.geometry.transform(sourceSRS, destSRS);
+                                                    }
+                                                    if (f.bounds && !!f.bounds.transform) {
+                                                        f.bounds.transform(sourceSRS, destSRS);
+                                                    }
+                                                });
+                                            }
+                                        }
                                         // append features to store:
                                         this._store.loadData(o.features, true);
                                     },
@@ -177,9 +205,9 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             toggleGroup: this.toggleGroup,
                             allowDepress: true,
                             pressed: true,
-                            tooltip: this.tr(""),
+                            tooltip: this.tr("rctr.selecttool.tip"),
                             iconCls: "gx-featureediting-draw-point",
-                            text: this.tr("rctr.selecttool.text"),
+                            text: this.tr("rctr.selecttool"),
                             iconAlign: "top",
                             // check item options
                             group: this.toggleGroup,
@@ -188,10 +216,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         new Ext.Action({
                             //handler: this.showForm,
                             scope: this,
-                            text: this.tr("rctr.show.form"),
+                            text: this.tr("rctr.showform"),
                             iconCls: "gx-featureediting-export",
                             iconAlign: "top",
-                            tooltip: this.tr("rctr.show.form.tip")
+                            tooltip: this.tr("rctr.showform.tip")
                         })
                     ]
                 }, {
@@ -205,6 +233,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         viewConfig: {
                             forceFit: true
                         },
+                        sm: new GeoExt.grid.FeatureSelectionModel({
+                            singleSelect: false,
+                            selectControl: this._sfControl
+                        }),
                         columns: [{
                             header: this.tr("rctr.grid.id"),
                             dataIndex: this.options.layer.fields.id,
