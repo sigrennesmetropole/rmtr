@@ -233,6 +233,9 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     region: "north",
                     border: false,
                     height: 40,
+                    defaults: {
+                        width: 80
+                    },
                     items: [
                         new Ext.Action({
                             handler: this._showWelcomeCard,
@@ -241,7 +244,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             toggleGroup: this._toggleGroup,
                             allowDepress: true,
                             pressed: true,
-                            iconCls: "gx-featureediting-export",
+                            iconCls: "rctr-welcome",
                             iconAlign: "top",
                             tooltip: this.tr("rctr.welcome.tip")
                         }),
@@ -263,7 +266,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             toggleGroup: this._toggleGroup,
                             allowDepress: true,
                             tooltip: this.tr("rctr.selecttool.tip"),
-                            iconCls: "gx-featureediting-draw-point",
+                            iconCls: "rctr-select",
                             text: this.tr("rctr.selecttool"),
                             iconAlign: "top",
                             // check item options
@@ -275,7 +278,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             text: this.tr("rctr.showform"),
                             toggleGroup: this._toggleGroup,
                             allowDepress: true,
-                            iconCls: "gx-featureediting-export",
+                            iconCls: "rctr-form",
                             iconAlign: "top",
                             tooltip: this.tr("rctr.showform.tip")
                         })

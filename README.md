@@ -5,7 +5,7 @@ Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant 
 
 Authors: @fvanderbiest
 
-Compatibility :  geOrchestra >= 16.12
+Compatibility: geOrchestra >= 16.12
 
 Example addon config:
 
