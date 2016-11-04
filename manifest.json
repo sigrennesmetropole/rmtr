@@ -31,7 +31,8 @@
             "rctr.form.phone": "Téléphone",
             "rctr.form.comments": "Motivation - Projet",
             "rctr.form.aboveground": "Surface",
-            "rctr.form.underground": "Sous-Sol"
+            "rctr.form.underground": "Sous-Sol",
+            "rctr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "es": {
             "rctr.window.title": "Extraction de données du RCTR",
@@ -55,7 +56,8 @@
             "rctr.form.phone": "Téléphone",
             "rctr.form.comments": "Motivation - Projet",
             "rctr.form.aboveground": "Surface",
-            "rctr.form.underground": "Sous-Sol"
+            "rctr.form.underground": "Sous-Sol",
+            "rctr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "fr": {
             "rctr.window.title": "Extraction de données du RCTR",
@@ -79,7 +81,8 @@
             "rctr.form.phone": "Téléphone",
             "rctr.form.comments": "Motivation - Projet",
             "rctr.form.aboveground": "Surface",
-            "rctr.form.underground": "Sous-Sol"
+            "rctr.form.underground": "Sous-Sol",
+            "rctr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "de": {
             "rctr.window.title": "Extraction de données du RCTR",
@@ -103,7 +106,8 @@
             "rctr.form.phone": "Téléphone",
             "rctr.form.comments": "Motivation - Projet",
             "rctr.form.aboveground": "Surface",
-            "rctr.form.underground": "Sous-Sol"
+            "rctr.form.underground": "Sous-Sol",
+            "rctr.form.textabove": "Veuillez compléter le formulaire suivant :"
         }
     }
 }

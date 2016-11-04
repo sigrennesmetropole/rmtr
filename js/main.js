@@ -6,9 +6,8 @@ Ext.namespace("GEOR.Addons");
 /*
 TODO:
  * do not add layer if already there
- * CSS
- * template mail
- * mailto
+ * template mail (?)
+ * mailto (?)
  * hardening
 */
 
@@ -339,33 +338,43 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             scope: this
                         }
                     }, {
-                        xtype: "form",
-                        id: "rctr_form",
-                        labelWidth: 110,
-                        labelAlign: "right",
-                        //standardSubmit: false,
-                        monitorValid: true,
-                        border: false,
-                        //bodyStyle: "padding:1em 0 0 0;",
+                        layout: "border",
                         defaults: {
-                            anchor: "-2em"
+                            border: false,
                         },
-                        defaultType: "textfield",
-                        labelSeparator: this.tr("labelSeparator"),
-                        items: this._getFormItems(),
-                        buttons: [{
-                            text: this.tr("rctr.form.submit"),
-                            formBind: true,
-                            handler: function() {
-                                var fp = this.ownerCt.ownerCt,
-                                    form = fp.getForm();
-                                if (form.isValid()) {
-                                    var v = form.getValues(),
-                                        ids = me._store.collect(me.options.layer.fields.id);
-                                    console.log(v, ids);
-                                    // mailto:xxx@yy.fr?cc=bb,gg&subject=zzz&body=aaa
+                        items: [{
+                            region: "north",
+                            bodyStyle: "padding:10px;",
+                            html: this.tr("rctr.form.textabove"),
+                            height: 35
+                        }, {
+                            xtype: "form",
+                            region: "center",
+                            id: "rctr_form",
+                            labelWidth: 110,
+                            labelAlign: "right",
+                            //standardSubmit: false,
+                            monitorValid: true,
+                            defaults: {
+                                anchor: "-20px"
+                            },
+                            defaultType: "textfield",
+                            labelSeparator: this.tr("labelSeparator"),
+                            items: this._getFormItems(),
+                            buttons: [{
+                                text: this.tr("rctr.form.submit"),
+                                formBind: true,
+                                handler: function() {
+                                    var fp = this.ownerCt.ownerCt,
+                                        form = fp.getForm();
+                                    if (form.isValid()) {
+                                        var v = form.getValues(),
+                                            ids = me._store.collect(me.options.layer.fields.id);
+                                        console.log(v, ids);
+                                        // mailto:xxx@yy.fr?cc=bb,gg&subject=zzz&body=aaa
+                                    }
                                 }
-                            }
+                            }]
                         }]
                     }]
                 }]
