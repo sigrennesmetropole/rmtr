@@ -7,7 +7,6 @@ Ext.namespace("GEOR.Addons");
 TODO:
  * do not add layer if already there
  * CSS
- * formulaire pré-rempli
  * template mail
  * mailto
  * hardening
@@ -285,6 +284,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     id: "rctr_card",
                     border: false,
                     layout: "card",
+                    deferredRender: true,
                     activeItem: 0,
                     defaults: {
                         border: false
@@ -314,7 +314,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             header: this.tr("rctr.grid.label"),
                             dataIndex: this.options.layer.fields.label
                         }],
-                        bbar: ['->', {
+                        bbar: ["->", {
                             text: this.tr("rctr.grid.remove"),
                             tooltip: this.tr("rctr.grid.remove.tip"),
                             handler: function(btn) {
@@ -335,9 +335,32 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             scope: this
                         }
                     }, {
-                        xtype: "panel",
+                        xtype: "form",
                         id: "rctr_form",
-                        html: "form"
+                        labelWidth: 110,
+                        labelAlign: "right",
+                        //standardSubmit: false,
+                        monitorValid: true,
+                        border: false,
+                        //bodyStyle: "padding:1em 0 0 0;",
+                        defaults: {
+                            anchor: "-1em"
+                        },
+                        defaultType: "textfield",
+                        labelSeparator: this.tr("labelSeparator"),
+                        items: this._getFormItems(),
+                        buttons: [{
+                            text: this.tr("rctr.form.submit"),
+                            formBind: true,
+                            handler: function() {
+                                var fp = this.ownerCt.ownerCt,
+                                    form = fp.getForm();
+                                if (form.isValid()) {
+                                    var v = form.getValues();
+                                    console.log(v);
+                                }
+                            }
+                        }]
                     }]
                 }]
             },
@@ -354,6 +377,65 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             [-5, 5],
             true
         );
+    },
+
+    /**
+     * Method: _getFormItems
+     * 
+     */
+    _getFormItems: function() {
+        return [{
+                fieldLabel: this.tr("rctr.form.firstname"),
+                labelStyle: "font-weight:bold;",
+                name: "first_name",
+                value: GEOR.config.USERFIRSTNAME || "",
+                allowBlank: false
+            }, {
+                fieldLabel: this.tr("rctr.form.lastname"),
+                labelStyle: "font-weight:bold;",
+                name: "last_name",
+                value: GEOR.config.USERLASTNAME || "",
+                allowBlank: false
+            }, {
+                fieldLabel: this.tr("rctr.form.org"),
+                labelStyle: "font-weight:bold;",
+                value: GEOR.config.USERORG || "",
+                name: "company",
+                allowBlank: false
+            }, {
+                fieldLabel: this.tr("rctr.form.service"),
+                labelStyle: "font-weight:bold;",
+                name: "service",
+                allowBlank: false
+            }, {
+                fieldLabel: this.tr("rctr.form.email"),
+                labelStyle: "font-weight:bold;",
+                name: "email",
+                vtype: "email",
+                value: GEOR.config.USEREMAIL || "",
+                allowBlank: false
+            }, {
+                fieldLabel: this.tr("rctr.form.phone"),
+                value: GEOR.config.USERTEL || "",
+                name: "tel"
+            }, {
+                xtype: "textarea",
+                fieldLabel: this.tr("rctr.form.comments"),
+                name: "comment",
+                height: 120
+            }, {
+                xtype:"checkboxgroup",
+                allowBlank: false,
+                columns: 1,
+                items: [{
+                    boxLabel: this.tr("rctr.form.aboveground"),
+                    name: "aboveground"
+                }, {
+                    boxLabel: this.tr("rctr.form.underground"),
+                    name: "underground"
+                }]
+            }
+        ];
     },
 
     /**
