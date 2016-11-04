@@ -6,11 +6,11 @@
         "target": "tbar_12",
         "layer": {
             "service": "https://sdi.georchestra.org/geoserver/wms",
-            "name": "geor:sdi",
+            "name": "ci:adminVectorLayer",
             "format": "image/png",
             "fields": {
-                "id": "name",
-                "label": "title"
+                "id": "FID",
+                "label": "FID"
             }
         },
         "baselayers": [{

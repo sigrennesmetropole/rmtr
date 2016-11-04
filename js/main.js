@@ -29,7 +29,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     init: function(record) {
         this.records = [];
 
-        this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_rctr_"+record.get("id"), {
+        this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id"), {
             displayInLayerSwitcher: false,
             styleMap: GEOR.util.getStyleMap(),
             rendererOptions: {
@@ -81,13 +81,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _onCheckchange: function(item, checked) {
         if (checked && !this._up) {
             this._setUp();
-            /*
-            this.window.alignTo(
-                Ext.get(this.map.div),
-                "t-t",
-                [0, 5],
-                true
-            );*/
         } else {
             this.window.hide();
         }
@@ -100,14 +93,14 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _setUp: function() {
         this._up = true;
-        // add vector layer:
-        this.map.addLayer(this._vectorLayer);
         // add carroyage layer:
         this._addLayer(this.options.layer, false, this._createWindow);
         Ext.each(this.options.baselayers, function(layer) {
             // load WMS baselayers (GWC compatible)
             this._addLayer(layer, true);
         }, this);
+        // add vector layer:
+        this.map.addLayer(this._vectorLayer);
     },
 
     /**
@@ -180,17 +173,17 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             pressed: true,
                             tooltip: this.tr(""),
                             iconCls: "gx-featureediting-draw-point",
-                            text: this.tr("annotation.point"),
+                            text: this.tr("rctr.selecttool.text"),
                             iconAlign: "top",
                             // check item options
                             group: this.toggleGroup,
                             checked: false
-                        }),"-",
+                        }),"->",
                         new Ext.Action({
                             //handler: this.showForm,
                             scope: this,
                             text: this.tr("rctr.show.form"),
-                            //iconCls: "gx-featureediting-export",
+                            iconCls: "gx-featureediting-export",
                             iconAlign: "top",
                             tooltip: this.tr("rctr.show.form.tip")
                         })
@@ -243,6 +236,12 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             }
         });
         this.window.show();
+        this.window.alignTo(
+            Ext.get(this.map.div),
+            "tr-tr",
+            [-5, 5],
+            true
+        );
     },
 
     /**
