@@ -21,6 +21,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     records: null,
     _up: false,
     _vectorLayer: null,
+    _sfControl: null,
     _store: null,
 
     /**
@@ -36,8 +37,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             displayInLayerSwitcher: false,
             styleMap: GEOR.util.getStyleMap({
                 "default": {
-                    strokeWidth: 2,
-                    strokeColor: "#ee5400",
+                    strokeWidth: 3,
+                    fillOpacity: 0
+                },
+                "select": {
                     fillOpacity: 0
                 }
             }),
@@ -133,6 +136,54 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     },
 
     /**
+     * Method: _removeDrawBox
+     * Change cursor back to normal
+     */
+    _removeDrawBox: function() {
+        OpenLayers.Element.removeClass(this.map.viewPortDiv, "olDrawBox");
+    },
+
+    /**
+     * Method: _addDrawBox
+     * Change cursor into draw box mode
+     */
+    _addDrawBox: function() {
+        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
+    },
+
+    /**
+     * Method: _onGetFeatureInfo
+     * Callback on GetFeatureInfo
+     */
+    _onGetFeatureInfo: function(o) {
+        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
+        this._addDrawBox();
+        if (!o.features || !o.features[0]) {
+            return;
+        }
+        // reproject features if needed
+        var r =  /.+srsName=\"(.+?)\".+/.exec(o.text);
+        if (r && r[1]) {
+            var srsString = r[1],
+                srsName = srsString.replace(/.+[#:\/](\d+)$/, "EPSG:$1");
+            if (this.map.getProjection() !== srsName) {
+                var sourceSRS = new OpenLayers.Projection(srsName),
+                    destSRS = this.map.getProjectionObject();
+                Ext.each(o.features, function(f) {
+                    if (f.geometry && !!f.geometry.transform) {
+                        f.geometry.transform(sourceSRS, destSRS);
+                    }
+                    if (f.bounds && !!f.bounds.transform) {
+                        f.bounds.transform(sourceSRS, destSRS);
+                    }
+                });
+            }
+        }
+        // append features to store:
+        this._store.loadData(o.features, true);
+    },
+
+    /**
      * Method: _createWindow
      * called when the layer record is available
      */
@@ -162,41 +213,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                                 maxFeatures: 1,
                                 infoFormat: "application/vnd.ogc.gml",
                                 eventListeners: {
-                                    "beforegetfeatureinfo": function() {
-                                        OpenLayers.Element.removeClass(this.map.viewPortDiv, "olDrawBox");
-                                    },
-                                    "getfeatureinfo": function(o) {
-                                        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
-                                        if (!o.features || !o.features[0]) {
-                                            return;
-                                        }
-                                        // reproject features if needed
-                                        var r =  /.+srsName=\"(.+?)\".+/.exec(o.text);
-                                        if (r && r[1]) {
-                                            var srsString = r[1],
-                                                srsName = srsString.replace(/.+[#:\/](\d+)$/, "EPSG:$1");
-                                            if (this.map.getProjection() !== srsName) {
-                                                var sourceSRS = new OpenLayers.Projection(srsName),
-                                                    destSRS = this.map.getProjectionObject();
-                                                Ext.each(o.features, function(f) {
-                                                    if (f.geometry && !!f.geometry.transform) {
-                                                        f.geometry.transform(sourceSRS, destSRS);
-                                                    }
-                                                    if (f.bounds && !!f.bounds.transform) {
-                                                        f.bounds.transform(sourceSRS, destSRS);
-                                                    }
-                                                });
-                                            }
-                                        }
-                                        // append features to store:
-                                        this._store.loadData(o.features, true);
-                                    },
-                                    "activate": function() {
-                                        OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
-                                    },
-                                    "deactivate": function() {
-                                        OpenLayers.Element.removeClass(this.map.viewPortDiv, "olDrawBox");
-                                    },
+                                    "beforegetfeatureinfo": this._removeDrawBox,
+                                    "getfeatureinfo": this._onGetFeatureInfo,
+                                    "activate": this._addDrawBox,
+                                    "deactivate": this._removeDrawBox,
                                     scope: this
                                 }
                             }),
