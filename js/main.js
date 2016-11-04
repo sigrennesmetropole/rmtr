@@ -5,7 +5,7 @@ Ext.namespace("GEOR.Addons");
 
 /*
 TODO:
- * card layout dans la fenetre (accueil / grid / form)
+ * do not add layer if already there
  * CSS
  * formulaire pré-rempli
  * template mail
@@ -16,7 +16,7 @@ TODO:
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
-    toggleGroup: "_rctr",
+    _toggleGroup: null,
     layerRecord: null,
     records: null,
     _up: false,
@@ -32,6 +32,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     init: function(record) {
         this.records = [];
+        this._toggleGroup= "_rctr_addon";
 
         this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id"), {
             displayInLayerSwitcher: false,
@@ -184,11 +185,37 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     },
 
     /**
+     * Method: _showWelcomeCard
+     *
+     */
+    _showWelcomeCard: function() {
+        this._cardPanel.layout.setActiveItem(0);
+    },
+
+    /**
+     * Method: _showGridCard
+     *
+     */
+    _showGridCard: function() {
+        this._cardPanel.layout.setActiveItem(1);
+        this._addDrawBox();
+    },
+
+    /**
+     * Method: _showFormCard
+     *
+     */
+    _showFormCard: function() {
+        this._cardPanel.layout.setActiveItem(2);
+    },
+
+    /**
      * Method: _createWindow
      * called when the layer record is available
      */
     _createWindow: function() {
         this.map.raiseLayer(this._vectorLayer, +1);
+        this._cardPanel = new Ext.Panel();
         this.window = new Ext.Window({
             title: this.tr("rctr.window.title"),
             width: 440,
@@ -207,6 +234,17 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     border: false,
                     height: 40,
                     items: [
+                        new Ext.Action({
+                            handler: this._showWelcomeCard,
+                            scope: this,
+                            text: this.tr("rctr.welcome"),
+                            toggleGroup: this._toggleGroup,
+                            allowDepress: true,
+                            pressed: true,
+                            iconCls: "gx-featureediting-export",
+                            iconAlign: "top",
+                            tooltip: this.tr("rctr.welcome.tip")
+                        }),
                         new GeoExt.Action({
                             control: new OpenLayers.Control.WMSGetFeatureInfo({
                                 layers: [this.layerRecord.getLayer()],
@@ -215,28 +253,28 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                                 eventListeners: {
                                     "beforegetfeatureinfo": this._removeDrawBox,
                                     "getfeatureinfo": this._onGetFeatureInfo,
-                                    "activate": this._addDrawBox,
+                                    "activate": this._showGridCard,
                                     "deactivate": this._removeDrawBox,
                                     scope: this
                                 }
                             }),
                             map: this.map,
                             // button options
-                            toggleGroup: this.toggleGroup,
+                            toggleGroup: this._toggleGroup,
                             allowDepress: true,
-                            pressed: true,
                             tooltip: this.tr("rctr.selecttool.tip"),
                             iconCls: "gx-featureediting-draw-point",
                             text: this.tr("rctr.selecttool"),
                             iconAlign: "top",
                             // check item options
-                            group: this.toggleGroup,
                             checked: false
-                        }),"->",
+                        }), //"->",
                         new Ext.Action({
-                            //handler: this.showForm,
+                            handler: this._showFormCard,
                             scope: this,
                             text: this.tr("rctr.showform"),
+                            toggleGroup: this._toggleGroup,
+                            allowDepress: true,
                             iconCls: "gx-featureediting-export",
                             iconAlign: "top",
                             tooltip: this.tr("rctr.showform.tip")
@@ -244,10 +282,21 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     ]
                 }, {
                     region: "center",
+                    id: "rctr_card",
                     border: false,
-                    layout: "fit",
+                    layout: "card",
+                    activeItem: 0,
+                    defaults: {
+                        border: false
+                    },
                     items: [{
+                        xtype: "panel",
+                        id: "rctr_welcome",
+                        bodyStyle: "padding: 1em;",
+                        html: this.tr("rctr.welcome.htmlcontent")
+                    }, {
                         xtype: "grid",
+                        id: "rctr_grid",
                         store: this._store,
                         frame: false,
                         viewConfig: {
@@ -285,6 +334,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             },
                             scope: this
                         }
+                    }, {
+                        xtype: "panel",
+                        id: "rctr_form",
+                        html: "form"
                     }]
                 }]
             },
@@ -294,6 +347,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             }
         });
         this.window.show();
+        this._cardPanel = this.window.findById("rctr_card");
         this.window.alignTo(
             Ext.get(this.map.div),
             "tr-tr",
