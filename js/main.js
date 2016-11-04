@@ -5,9 +5,13 @@ Ext.namespace("GEOR.Addons");
 
 /*
 TODO:
+ * bugfix stylemap
+ * card layout dans la fenetre (accueil / grid / form)
+ * CSS
  * formulaire pré-rempli
  * template mail
  * mailto
+ * hardening
 */
 
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
@@ -31,7 +35,13 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
 
         this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id"), {
             displayInLayerSwitcher: false,
-            styleMap: GEOR.util.getStyleMap(),
+            styleMap: GEOR.util.getStyleMap({
+                "default": {
+                    strokeWidth: 2,
+                    strokeColor: "#ee5400",
+                    fillOpacity: 0
+                }
+            }),
             rendererOptions: {
                 zIndexing: true
             }
@@ -43,10 +53,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 this.options.layer.fields.label
             ],
             initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER
-            /*
-                GeoExt.data.FeatureStore.LAYER_TO_STORE :
-                GeoExt.data.FeatureStore.LAYER_TO_STORE|GeoExt.data.FeatureStore.STORE_TO_LAYER
-            */
         });
 
         if (this.target) {
@@ -93,12 +99,12 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _setUp: function() {
         this._up = true;
-        // add carroyage layer:
-        this._addLayer(this.options.layer, false, this._createWindow);
+        // add WMS baselayers (GWC compatible):
         Ext.each(this.options.baselayers, function(layer) {
-            // load WMS baselayers (GWC compatible)
             this._addLayer(layer, true);
         }, this);
+        // add carroyage layer:
+        this._addLayer(this.options.layer, false, this._createWindow);
         // add vector layer:
         this.map.addLayer(this._vectorLayer);
     },
@@ -213,14 +219,14 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             handler: function(btn) {
                                 var grid = btn.ownerCt.ownerCt,
                                     sm = grid.getSelectionModel();
-                                this._store.remove(sm.getSelected());
+                                this._store.remove(sm.getSelections());
                             },
                             scope: this
                         }],
                         listeners: {
                             "beforedestroy": function() {
                                 this._vectorLayer.destroyFeatures();
-                                this.selModel.unbind();
+                                this.selModel && this.selModel.unbind();
                                 // this deactivates Feature handler,
                                 // and moves search_results layer back to normal z-index
                                 return true;
@@ -271,9 +277,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     // set opaque status for layer order:
                     if (isBaseLayer) {
                         record.set("opaque", true);
-                        // keep a reference to record:
+                        // keep a reference to baselayer records:
                         this.records.push(record);
                     } else {
+                        // keep a reference to the carroyage layer record:
                         this.layerRecord = record;
                     }
                     // enforce format:
@@ -305,7 +312,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      *
      */
     destroy: function() {
-        //Place addon specific destroy here
         this.window && this.window.close();
         this._tearDown();
         GEOR.Addons.Base.prototype.destroy.call(this);
