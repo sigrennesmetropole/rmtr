@@ -511,7 +511,8 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         var quit = false;
         this.mapPanel.layers.each(function(record) {
             var layer = record.getLayer();
-            if (!layer.url || (cfg.service !== layer.url && cfg.name !== record.get("name"))) {
+            if (!layer.url || 
+                (!OpenLayers.Util.isEquivalentUrl(cfg.service, layer.url) && cfg.name !== record.get("name"))) {
                 // skip layers that are not in cfg
                 return;
             }
