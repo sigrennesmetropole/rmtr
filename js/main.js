@@ -247,6 +247,9 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      *
      */
     _showFormCard: function() {
+        // clear selections:
+        this.window.findById("rctr_grid").getSelectionModel().clearSelections();
+        // before switching to form:
         this._cardPanel.layout.setActiveItem(2);
     },
 
