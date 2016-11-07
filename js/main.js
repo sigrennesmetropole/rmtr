@@ -5,7 +5,6 @@ Ext.namespace("GEOR.Addons");
 
 /*
 TODO:
- * do not add layer if already there
  * template mail (?)
  * mailto (?)
  * hardening
@@ -21,6 +20,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _vectorLayer: null,
     _sfControl: null,
     _store: null,
+    _cardPanel: null,
 
     /**
      * Method: init
@@ -114,9 +114,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         }, this);
         // add carroyage layer:
         this._addLayer(this.options.layer, false, this._createWindow);
-        // add vector layer:
-        this.map.addLayer(this._vectorLayer);
-        this.map.addControl(this._sfControl);
     },
 
     /**
@@ -125,6 +122,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _tearDown: function() {
         this._up = false;
+        this._store.removeAll();
         this.map.removeLayer(this._vectorLayer);
         this.map.removeControl(this._sfControl);
         this.mapPanel.layers.remove(this.layerRecord);
@@ -213,8 +211,13 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _createWindow: function() {
         var me = this;
-        this.map.raiseLayer(this._vectorLayer, +1);
-        this._cardPanel = new Ext.Panel();
+        // add vector layer + control first:
+        // (they are required for the GeoExt.grid.FeatureSelectionModel)
+        this.map.addLayer(this._vectorLayer);
+        this.map.addControl(this._sfControl);
+        // raise vector layer on top:
+        this.map.setLayerIndex(this._vectorLayer, this.map.layers.length);
+        // create window:
         this.window = new Ext.Window({
             title: this.tr("rctr.window.title"),
             width: 440,
@@ -459,14 +462,35 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      * 
      */
     _addLayer: function(cfg, isBaseLayer, callback) {
-        // TODO: check layer is not already loaded
+        // check layer is not already loaded
+        var quit = false;
+        this.mapPanel.layers.each(function(record) {
+            var layer = record.getLayer();
+            if (!layer.url || (cfg.service !== layer.url && cfg.name !== record.get("name"))) {
+                // skip layers that are not in cfg
+                return;
+            }
+            if (isBaseLayer) {
+                // keep a reference to baselayer records:
+                this.records.push(record);
+            } else {
+                // keep a reference to the carroyage layer record:
+                this.layerRecord = record;
+            }
+            quit = true;
+        }, this);
+        if (quit) {
+            callback && callback.call(this);
+            return;
+        }
+        // go on with adding layer:
         var layerOptions = isBaseLayer ? {
             gutter: 0,
             transitionEffect: "resize",
             tileSize: new OpenLayers.Size(256, 256)
         } : {};
         var u = GEOR.util.splitURL(cfg.service);
-        var layerStore = GEOR.ows.WMSCapabilities({
+        GEOR.ows.WMSCapabilities({
             storeOptions: {
                 url: u.serviceURL,
                 layerOptions: layerOptions
