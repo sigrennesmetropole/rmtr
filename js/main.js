@@ -169,6 +169,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         this._up = false;
         this._store.removeAll();
         this.map.removeControl(this._sfControl);
+        this.map.removeControl(this._gfiControl);
         this.map.removeLayer(this._vectorLayer);
         this.mapPanel.layers.remove(this.layerRecord);
         Ext.each(this.records, function(r) {
@@ -263,8 +264,6 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         // (they are required for the GeoExt.grid.FeatureSelectionModel)
         this.map.addLayer(this._vectorLayer);
         this.map.addControl(this._sfControl);
-        // raise vector layer on top:
-        this.map.setLayerIndex(this._vectorLayer, this.map.layers.length);
         // reset form action state:
         this._formAction.setText(this.tr("rctr.showform"));
         this._formAction.disable();
