@@ -21,6 +21,8 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _sfControl: null,
     _store: null,
     _cardPanel: null,
+    _formAction: null,
+    _removeRecordsBtn: null,
 
     /**
      * Method: init
@@ -55,13 +57,41 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         // we make sure that we cannot select the same object two times:
         this._sfControl.handlers.feature.stopDown = true;
 
+        this._formAction = new Ext.Action({
+            handler: this._showFormCard,
+            scope: this,
+            disabled: true,
+            text: this.tr("rctr.showform"),
+            toggleGroup: this._toggleGroup,
+            allowDepress: true,
+            iconCls: "rctr-form",
+            iconAlign: "top",
+            tooltip: this.tr("rctr.showform.tip")
+        });
+        this._removeRecordsBtn = new Ext.Button({
+            text: this.tr("rctr.grid.remove"),
+            tooltip: this.tr("rctr.grid.remove.tip"),
+            iconCls: 'btn-removeall',
+            disabled: true,
+            handler: function(btn) {
+                var grid = btn.ownerCt.ownerCt,
+                    sm = grid.getSelectionModel();
+                this._store.remove(sm.getSelections());
+            },
+            scope: this
+        });
         this._store = new GeoExt.data.FeatureStore({
             layer: this._vectorLayer,
             fields: [
                 this.options.layer.fields.id,
                 this.options.layer.fields.label
             ],
-            initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER
+            initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER,
+            listeners: {
+                "load": this._onStoreCountChanged,
+                "remove": this._onStoreCountChanged,
+                scope: this
+            }
         });
 
         if (this.target) {
@@ -101,6 +131,21 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         }
     },
 
+    /**
+     * Method: _onStoreCountChanged
+     * 
+     */
+    _onStoreCountChanged: function(s) {
+        var c = s.getCount(),
+            action = this._formAction;
+        if (s.getCount() == 0) {
+            action.setText(this.tr("rctr.showform"));
+            action.disable();
+        } else {
+            action.enable();
+            action.setText(this.tr("rctr.showform") + " ("+ c +")");
+        }
+    },
 
     /**
      * Method: _setUp
@@ -274,16 +319,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             // check item options
                             checked: false
                         }), //"->",
-                        new Ext.Action({
-                            handler: this._showFormCard,
-                            scope: this,
-                            text: this.tr("rctr.showform"),
-                            toggleGroup: this._toggleGroup,
-                            allowDepress: true,
-                            iconCls: "rctr-form",
-                            iconAlign: "top",
-                            tooltip: this.tr("rctr.showform.tip")
-                        })
+                        this._formAction
                     ]
                 }, {
                     region: "center",
@@ -310,7 +346,15 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         },
                         sm: new GeoExt.grid.FeatureSelectionModel({
                             singleSelect: false,
-                            selectControl: this._sfControl
+                            selectControl: this._sfControl,
+                            listeners: {
+                                "selectionchange": function(sm) {
+                                    this._removeRecordsBtn.setDisabled(
+                                        sm.getCount() == 0
+                                    );
+                                },
+                                scope: this
+                            }
                         }),
                         columns: [{
                             header: this.tr("rctr.grid.id"),
@@ -320,22 +364,13 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             header: this.tr("rctr.grid.label"),
                             dataIndex: this.options.layer.fields.label
                         }],
-                        bbar: ["->", {
-                            text: this.tr("rctr.grid.remove"),
-                            tooltip: this.tr("rctr.grid.remove.tip"),
-                            handler: function(btn) {
-                                var grid = btn.ownerCt.ownerCt,
-                                    sm = grid.getSelectionModel();
-                                this._store.remove(sm.getSelections());
-                            },
-                            scope: this
-                        }],
+                        bbar: ["->", this._removeRecordsBtn],
                         listeners: {
                             "beforedestroy": function() {
                                 this._vectorLayer.destroyFeatures();
                                 this.selModel && this.selModel.unbind();
                                 // this deactivates Feature handler,
-                                // and moves search_results layer back to normal z-index
+                                // and moves vector layer layer back to normal z-index
                                 return true;
                             },
                             scope: this
