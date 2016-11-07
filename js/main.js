@@ -7,7 +7,6 @@ Ext.namespace("GEOR.Addons");
 TODO:
  * template mail (?)
  * mailto (?)
- * hardening
 */
 
 GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
@@ -23,6 +22,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _cardPanel: null,
     _formAction: null,
     _removeRecordsBtn: null,
+    _gfiControl: null,
 
     /**
      * Method: init
@@ -168,8 +168,8 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _tearDown: function() {
         this._up = false;
         this._store.removeAll();
-        this.map.removeLayer(this._vectorLayer);
         this.map.removeControl(this._sfControl);
+        this.map.removeLayer(this._vectorLayer);
         this.mapPanel.layers.remove(this.layerRecord);
         Ext.each(this.records, function(r) {
             this.mapPanel.layers.remove(r);
@@ -262,6 +262,22 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         this.map.addControl(this._sfControl);
         // raise vector layer on top:
         this.map.setLayerIndex(this._vectorLayer, this.map.layers.length);
+        // reset form action state:
+        this._formAction.setText(this.tr("rctr.showform"));
+        this._formAction.disable();
+        // create GFI control:
+        this._gfiControl = new OpenLayers.Control.WMSGetFeatureInfo({
+            layers: [this.layerRecord.getLayer()],
+            maxFeatures: 1,
+            infoFormat: "application/vnd.ogc.gml",
+            eventListeners: {
+                "beforegetfeatureinfo": this._removeDrawBox,
+                "getfeatureinfo": this._onGetFeatureInfo,
+                "activate": this._showGridCard,
+                "deactivate": this._removeDrawBox,
+                scope: this
+            }
+        });
         // create window:
         this.window = new Ext.Window({
             title: this.tr("rctr.window.title"),
@@ -296,18 +312,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             tooltip: this.tr("rctr.welcome.tip")
                         }),
                         new GeoExt.Action({
-                            control: new OpenLayers.Control.WMSGetFeatureInfo({
-                                layers: [this.layerRecord.getLayer()],
-                                maxFeatures: 1,
-                                infoFormat: "application/vnd.ogc.gml",
-                                eventListeners: {
-                                    "beforegetfeatureinfo": this._removeDrawBox,
-                                    "getfeatureinfo": this._onGetFeatureInfo,
-                                    "activate": this._showGridCard,
-                                    "deactivate": this._removeDrawBox,
-                                    scope: this
-                                }
-                            }),
+                            control: this._gfiControl,
                             map: this.map,
                             // button options
                             toggleGroup: this._toggleGroup,
@@ -575,8 +580,12 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      *
      */
     destroy: function() {
-        this.window && this.window.close();
-        this._tearDown();
+        this.window && this.window.hide(); // will invoke tearDown
+        this._gfiControl && this._gfiControl.deactivate() && this._gfiControl.destroy();
+        this._store = null;
+        this._sfControl = null;
+        this._vectorLayer = null;
+        this.window = null;
         GEOR.Addons.Base.prototype.destroy.call(this);
     }
 });
