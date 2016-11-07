@@ -17,7 +17,7 @@ Example addon config:
         "target": "tbar_12",
         "layer": {
             "service": "https://portail-test.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
-            "name": "toposurf_rctr_carroyage"
+            "name": "toposurf_rctr_carroyage",
             "format": "image/png",
             "fields": {
                 "id": "id_case",
