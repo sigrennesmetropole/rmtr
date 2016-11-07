@@ -201,7 +201,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
     _onGetFeatureInfo: function(o) {
         OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
         this._addDrawBox();
-        if (!o.features || !o.features[0]) {
+        var idField = this.options.layer.fields.id;
+        if (!o.features || !o.features[0] ||
+            // feature id already exists in store:
+            this._store.find(idField, o.features[0].data[idField]) > -1) {
             return;
         }
         // reproject features if needed
