@@ -1,15 +1,15 @@
-.addon-rctr {
+.addon-rmtr {
     background-image: url(../img/icon.png) !important;
 }
 
-.rctr-welcome {
+.rmtr-welcome {
   background-image: url("../img/house.png") !important;
 }
 
-.rctr-select {
+.rmtr-select {
   background-image: url("../img/marker.png") !important;
 }
 
-.rctr-form {
+.rmtr-form {
   background-image: url("../img/email_go.png") !important;
 }

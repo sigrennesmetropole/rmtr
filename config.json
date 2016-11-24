@@ -1,7 +1,7 @@
 [{
-    "id": "rctr_0",
+    "id": "rmtr_0",
     "enabled": true,
-    "name": "RCTR",
+    "name": "RMTR",
     "options": {
         "target": "tbar_12",
         "layer": {
@@ -24,15 +24,15 @@
         }]
     },
     "title": {
-        "en": "RCTR",
-        "fr": "RCTR",
-        "es": "RCTR",
-        "de": "RCTR"
+        "en": "RMTR",
+        "fr": "RMTR",
+        "es": "RMTR",
+        "de": "RMTR"
     },
     "description": {
-        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux"
+        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux"
     }
 }]

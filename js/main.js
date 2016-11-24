@@ -9,7 +9,7 @@ TODO:
  * mailto (?)
 */
 
-GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
+GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
     _toggleGroup: null,
@@ -32,7 +32,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     init: function(record) {
         this.records = [];
-        this._toggleGroup= "_rctr_addon";
+        this._toggleGroup= "_rmtr_addon";
 
         this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id"), {
             displayInLayerSwitcher: false,
@@ -61,16 +61,16 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             handler: this._showFormCard,
             scope: this,
             disabled: true,
-            text: this.tr("rctr.showform"),
+            text: this.tr("rmtr.showform"),
             toggleGroup: this._toggleGroup,
             allowDepress: true,
-            iconCls: "rctr-form",
+            iconCls: "rmtr-form",
             iconAlign: "top",
-            tooltip: this.tr("rctr.showform.tip")
+            tooltip: this.tr("rmtr.showform.tip")
         });
         this._removeRecordsBtn = new Ext.Button({
-            text: this.tr("rctr.grid.remove"),
-            tooltip: this.tr("rctr.grid.remove.tip"),
+            text: this.tr("rmtr.grid.remove"),
+            tooltip: this.tr("rmtr.grid.remove.tip"),
             iconCls: 'btn-removeall',
             disabled: true,
             handler: function(btn) {
@@ -99,7 +99,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             this.components = this.target.insertButton(this.position, {
                 xtype: "button",
                 tooltip: this.getTooltip(record),
-                iconCls: "addon-rctr",
+                iconCls: "addon-rmtr",
                 handler: this._onCheckchange,
                 scope: this
             });
@@ -109,7 +109,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             this.item = new Ext.menu.CheckItem({
                 text: this.getText(record),
                 qtip: this.getQtip(record),
-                iconCls: "addon-rctr",
+                iconCls: "addon-rmtr",
                 checked: false,
                 listeners: {
                     "checkchange": this._onCheckchange,
@@ -139,11 +139,11 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         var c = s.getCount(),
             action = this._formAction;
         if (s.getCount() == 0) {
-            action.setText(this.tr("rctr.showform"));
+            action.setText(this.tr("rmtr.showform"));
             action.disable();
         } else {
             action.enable();
-            action.setText(this.tr("rctr.showform") + " ("+ c +")");
+            action.setText(this.tr("rmtr.showform") + " ("+ c +")");
         }
     },
 
@@ -252,7 +252,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _showFormCard: function() {
         // clear selections:
-        this.window.findById("rctr_grid").getSelectionModel().clearSelections();
+        this.window.findById("rmtr_grid").getSelectionModel().clearSelections();
         // before switching to form:
         this._cardPanel.layout.setActiveItem(2);
     },
@@ -268,7 +268,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         this.map.addLayer(this._vectorLayer);
         this.map.addControl(this._sfControl);
         // reset form action state:
-        this._formAction.setText(this.tr("rctr.showform"));
+        this._formAction.setText(this.tr("rmtr.showform"));
         this._formAction.disable();
         // create GFI control:
         this._gfiControl = new OpenLayers.Control.WMSGetFeatureInfo({
@@ -285,7 +285,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
         });
         // create window:
         this.window = new Ext.Window({
-            title: this.tr("rctr.window.title"),
+            title: this.tr("rmtr.window.title"),
             width: 440,
             height: 500,
             closable: true,
@@ -308,13 +308,13 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         new Ext.Action({
                             handler: this._showWelcomeCard,
                             scope: this,
-                            text: this.tr("rctr.welcome"),
+                            text: this.tr("rmtr.welcome"),
                             toggleGroup: this._toggleGroup,
                             allowDepress: true,
                             pressed: true,
-                            iconCls: "rctr-welcome",
+                            iconCls: "rmtr-welcome",
                             iconAlign: "top",
-                            tooltip: this.tr("rctr.welcome.tip")
+                            tooltip: this.tr("rmtr.welcome.tip")
                         }),
                         new GeoExt.Action({
                             control: this._gfiControl,
@@ -322,9 +322,9 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             // button options
                             toggleGroup: this._toggleGroup,
                             allowDepress: true,
-                            tooltip: this.tr("rctr.selecttool.tip"),
-                            iconCls: "rctr-select",
-                            text: this.tr("rctr.selecttool"),
+                            tooltip: this.tr("rmtr.selecttool.tip"),
+                            iconCls: "rmtr-select",
+                            text: this.tr("rmtr.selecttool"),
                             iconAlign: "top",
                             // check item options
                             checked: false
@@ -333,7 +333,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     ]
                 }, {
                     region: "center",
-                    id: "rctr_card",
+                    id: "rmtr_card",
                     border: false,
                     layout: "card",
                     deferredRender: true,
@@ -343,12 +343,12 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                     },
                     items: [{
                         xtype: "panel",
-                        id: "rctr_welcome",
+                        id: "rmtr_welcome",
                         bodyStyle: "padding: 1em;",
-                        html: this.tr("rctr.welcome.htmlcontent")
+                        html: this.tr("rmtr.welcome.htmlcontent")
                     }, {
                         xtype: "grid",
-                        id: "rctr_grid",
+                        id: "rmtr_grid",
                         store: this._store,
                         frame: false,
                         viewConfig: {
@@ -367,11 +367,11 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             }
                         }),
                         columns: [{
-                            header: this.tr("rctr.grid.id"),
+                            header: this.tr("rmtr.grid.id"),
                             dataIndex: this.options.layer.fields.id,
                             width: 40 // TODO: config for this ?
                         }, {
-                            header: this.tr("rctr.grid.label"),
+                            header: this.tr("rmtr.grid.label"),
                             dataIndex: this.options.layer.fields.label
                         }],
                         bbar: ["->", this._removeRecordsBtn],
@@ -393,12 +393,12 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                         items: [{
                             region: "north",
                             bodyStyle: "padding:10px;",
-                            html: this.tr("rctr.form.textabove"),
+                            html: this.tr("rmtr.form.textabove"),
                             height: 35
                         }, {
                             xtype: "form",
                             region: "center",
-                            id: "rctr_form",
+                            id: "rmtr_form",
                             labelWidth: 110,
                             labelAlign: "right",
                             //standardSubmit: false,
@@ -410,7 +410,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                             labelSeparator: this.tr("labelSeparator"),
                             items: this._getFormItems(),
                             buttons: [{
-                                text: this.tr("rctr.form.submit"),
+                                text: this.tr("rmtr.form.submit"),
                                 formBind: true,
                                 handler: function() {
                                     var fp = this.ownerCt.ownerCt,
@@ -433,7 +433,7 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
             }
         });
         this.window.show();
-        this._cardPanel = this.window.findById("rctr_card");
+        this._cardPanel = this.window.findById("rmtr_card");
         this.window.alignTo(
             Ext.get(this.map.div),
             "tr-tr",
@@ -448,43 +448,43 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
      */
     _getFormItems: function() {
         return [{
-                fieldLabel: this.tr("rctr.form.firstname"),
+                fieldLabel: this.tr("rmtr.form.firstname"),
                 labelStyle: "font-weight:bold;",
                 name: "first_name",
                 value: GEOR.config.USERFIRSTNAME || "",
                 allowBlank: false
             }, {
-                fieldLabel: this.tr("rctr.form.lastname"),
+                fieldLabel: this.tr("rmtr.form.lastname"),
                 labelStyle: "font-weight:bold;",
                 name: "last_name",
                 value: GEOR.config.USERLASTNAME || "",
                 allowBlank: false
             }, {
-                fieldLabel: this.tr("rctr.form.org"),
+                fieldLabel: this.tr("rmtr.form.org"),
                 labelStyle: "font-weight:bold;",
                 value: GEOR.config.USERORG || "",
                 name: "company",
                 allowBlank: false
             }, {
-                fieldLabel: this.tr("rctr.form.service"),
+                fieldLabel: this.tr("rmtr.form.service"),
                 labelStyle: "font-weight:bold;",
                 value: "",
                 name: "service",
                 allowBlank: false
             }, {
-                fieldLabel: this.tr("rctr.form.email"),
+                fieldLabel: this.tr("rmtr.form.email"),
                 labelStyle: "font-weight:bold;",
                 name: "email",
                 vtype: "email",
                 value: GEOR.config.USEREMAIL || "",
                 allowBlank: false
             }, {
-                fieldLabel: this.tr("rctr.form.phone"),
+                fieldLabel: this.tr("rmtr.form.phone"),
                 value: GEOR.config.USERTEL || "",
                 name: "tel"
             }, {
                 xtype: "textarea",
-                fieldLabel: this.tr("rctr.form.comments"),
+                fieldLabel: this.tr("rmtr.form.comments"),
                 name: "comment",
                 height: 120
             }, {
@@ -492,10 +492,10 @@ GEOR.Addons.RCTR = Ext.extend(GEOR.Addons.Base, {
                 allowBlank: false,
                 columns: 1,
                 items: [{
-                    boxLabel: this.tr("rctr.form.aboveground"),
+                    boxLabel: this.tr("rmtr.form.aboveground"),
                     name: "aboveground"
                 }, {
-                    boxLabel: this.tr("rctr.form.underground"),
+                    boxLabel: this.tr("rmtr.form.underground"),
                     name: "underground"
                 }]
             }

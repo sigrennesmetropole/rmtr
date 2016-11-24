@@ -1,7 +1,7 @@
-RCTR
+RMTR
 ======
 
-Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux de Rennes Métropole.
+Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux de Rennes Métropole.
 
 Authors: @fvanderbiest
 
@@ -10,9 +10,9 @@ Compatibility: geOrchestra >= 16.12
 Example addon config:
 
 ```js
-{
-    "id": "rctr_0",
-    "name": "RCTR",
+[{
+    "id": "rmtr_0",
+    "name": "RMTR",
     "options": {
         "target": "tbar_12",
         "layer": {
@@ -35,16 +35,16 @@ Example addon config:
         }]
     },
     "title": {
-        "en": "RCTR",
-        "fr": "RCTR",
-        "es": "RCTR",
-        "de": "RCTR"
+        "en": "RMTR",
+        "fr": "RMTR",
+        "es": "RMTR",
+        "de": "RMTR"
     },
     "description": {
-        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux",
-        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Communautaire Topographique et Réseaux"
+        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
+        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux"
     }
-}
+}]
 ```
