@@ -30,8 +30,8 @@
             "rmtr.form.email": "Courriel",
             "rmtr.form.phone": "Téléphone",
             "rmtr.form.comments": "Motivation - Projet",
-            "rmtr.form.aboveground": "Surface",
-            "rmtr.form.underground": "Sous-Sol",
+            "rmtr.form.aboveground": "Données de surface",
+            "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "es": {
@@ -55,8 +55,8 @@
             "rmtr.form.email": "Courriel",
             "rmtr.form.phone": "Téléphone",
             "rmtr.form.comments": "Motivation - Projet",
-            "rmtr.form.aboveground": "Surface",
-            "rmtr.form.underground": "Sous-Sol",
+            "rmtr.form.aboveground": "Données de surface",
+            "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "fr": {
@@ -80,8 +80,8 @@
             "rmtr.form.email": "Courriel",
             "rmtr.form.phone": "Téléphone",
             "rmtr.form.comments": "Motivation - Projet",
-            "rmtr.form.aboveground": "Surface",
-            "rmtr.form.underground": "Sous-Sol",
+            "rmtr.form.aboveground": "Données de surface",
+            "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
         },
         "de": {
@@ -105,8 +105,8 @@
             "rmtr.form.email": "Courriel",
             "rmtr.form.phone": "Téléphone",
             "rmtr.form.comments": "Motivation - Projet",
-            "rmtr.form.aboveground": "Surface",
-            "rmtr.form.underground": "Sous-Sol",
+            "rmtr.form.aboveground": "Données de surface",
+            "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
         }
     }
