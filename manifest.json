@@ -6,7 +6,8 @@
         "css/main.css"
     ],
     "default_options": {
-
+        "subject": "[RMTR]",
+        "template": "Bonjour,\n\n{first_name} {last_name} ({email} - {tel} - {service} - {company}) a effectué une demande d'extraction du RMTR.\nSous-sol: {underground}\nSurface: {aboveground}\n\nMotivations: {comment}\n\nLes tuiles concernées sont les suivantes: {tiles}"
     },
     "i18n": {
         "en": {

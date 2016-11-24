@@ -262,7 +262,6 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
      * called when the layer record is available
      */
     _createWindow: function() {
-        var me = this;
         // add vector layer + control first:
         // (they are required for the GeoExt.grid.FeatureSelectionModel)
         this.map.addLayer(this._vectorLayer);
@@ -399,7 +398,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                             xtype: "form",
                             region: "center",
                             id: "rmtr_form",
-                            labelWidth: 110,
+                            labelWidth: 115,
                             labelAlign: "right",
                             //standardSubmit: false,
                             monitorValid: true,
@@ -412,16 +411,8 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                             buttons: [{
                                 text: this.tr("rmtr.form.submit"),
                                 formBind: true,
-                                handler: function() {
-                                    var fp = this.ownerCt.ownerCt,
-                                        form = fp.getForm();
-                                    if (form.isValid()) {
-                                        var v = form.getValues(),
-                                            ids = me._store.collect(me.options.layer.fields.id);
-                                        console.log(v, ids);
-                                        // mailto:xxx@yy.fr?cc=bb,gg&subject=zzz&body=aaa
-                                    }
-                                }
+                                handler: this._submit,
+                                scope: this
                             }]
                         }]
                     }]
@@ -440,6 +431,34 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             [-5, 5],
             true
         );
+    },
+
+    /**
+     * Method: _submit
+     *
+     */
+    _submit: function() {
+        var fp = this.window.findByType("form")[0],
+            form = fp.getForm();
+        if (!form.isValid()) {
+            return;
+        }
+        var v = form.getValues();
+        v.tiles = this._store.collect(this.options.layer.fields.id).join(', ');
+        var spec = {
+            "subject": this.options.subject,
+            "body": new Ext.XTemplate(this.options.template).apply(v)
+        };
+        GEOR.waiter.show();
+        OpenLayers.Request.POST({
+            url: GEOR.config.PATHNAME + "/ws/email/",
+            data: new OpenLayers.Format.JSON().write(spec),
+            success: function(response) {
+                // TODO
+                alert("C'est parti mon kiki");
+            },
+            scope: this
+        });
     },
 
     /**
@@ -485,6 +504,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             }, {
                 xtype: "textarea",
                 fieldLabel: this.tr("rmtr.form.comments"),
+                labelStyle: "font-weight:bold;",
                 name: "comment",
                 height: 120,
                 allowBlank: false
