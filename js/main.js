@@ -486,7 +486,8 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 xtype: "textarea",
                 fieldLabel: this.tr("rmtr.form.comments"),
                 name: "comment",
-                height: 120
+                height: 120,
+                allowBlank: false
             }, {
                 xtype:"checkboxgroup",
                 allowBlank: false,
