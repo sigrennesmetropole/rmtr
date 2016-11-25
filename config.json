@@ -10,10 +10,16 @@
             "service": "https://sdi.georchestra.org/geoserver/wms",
             "name": "ci:adminVectorLayer",
             "format": "image/png",
-            "fields": {
-                "id": "FID",
-                "label": "FID"
-            }
+            "fields": [{
+                "name": "FID",
+                "type": "string",
+                "header": "Identifiant",
+                "width": 40
+            }, {
+                "name": "UNCERTAIN",
+                "type": "float",
+                "header": "Incertitude"
+            }]
         },
         "baselayers": [{
             "service": "https://sdi.georchestra.org/geoserver/gwc/service/wms",

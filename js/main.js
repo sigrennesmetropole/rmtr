@@ -80,12 +80,16 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             },
             scope: this
         });
+        var storeFields = []
+        Ext.each(this.options.layer.fields, function(f) {
+            storeFields.push({
+                name: f.name,
+                type: f.type
+            });
+        });
         this._store = new GeoExt.data.FeatureStore({
             layer: this._vectorLayer,
-            fields: [
-                this.options.layer.fields.id,
-                this.options.layer.fields.label
-            ],
+            fields: storeFields,
             initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER,
             listeners: {
                 "load": this._onStoreCountChanged,
@@ -201,7 +205,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
     _onGetFeatureInfo: function(o) {
         OpenLayers.Element.addClass(this.map.viewPortDiv, "olDrawBox");
         this._addDrawBox();
-        var idField = this.options.layer.fields.id;
+        var idField = this.options.layer.fields[0].name;
         if (!o.features || !o.features[0] ||
             // feature id already exists in store:
             this._store.find(idField, o.features[0].data[idField]) > -1) {
@@ -281,6 +285,17 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 "deactivate": this._removeDrawBox,
                 scope: this
             }
+        });
+        var columns = [];
+        Ext.each(this.options.layer.fields, function(f) {
+            var c = {
+                dataIndex: f.name,
+                header: f.header
+            };
+            if (f.width) {
+                c.width = f.width;
+            }
+            columns.push(c);
         });
         // create window:
         this.window = new Ext.Window({
@@ -365,14 +380,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                                 scope: this
                             }
                         }),
-                        columns: [{
-                            header: this.tr("rmtr.grid.id"),
-                            dataIndex: this.options.layer.fields.id,
-                            width: 40 // TODO: config for this ?
-                        }, {
-                            header: this.tr("rmtr.grid.label"),
-                            dataIndex: this.options.layer.fields.label
-                        }],
+                        columns: columns,
                         bbar: ["->", this._removeRecordsBtn],
                         listeners: {
                             "beforedestroy": function() {
@@ -444,7 +452,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             return;
         }
         var v = form.getValues();
-        v.tiles = this._store.collect(this.options.layer.fields.id).join(', ');
+        v.tiles = this._store.collect(this.options.layer.fields[0].name).join(', ');
         var spec = {
             "subject": this.options.subject,
             "body": new Ext.XTemplate(this.options.template).apply(v)
