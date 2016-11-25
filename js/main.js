@@ -375,7 +375,13 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 "activate": this._showGridCard,
                 scope: this
             }
-        })
+        });
+        this._drawPolygonControl = new OpenLayers.Control.DrawFeature(this._drawLayer, OpenLayers.Handler.Polygon, {
+            eventListeners: {
+                "activate": this._showGridCard,
+                scope: this
+            }
+        });
         var columns = [];
         Ext.each(this.options.layer.fields, function(f) {
             var c = {
@@ -442,6 +448,19 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                             tooltip: this.tr("rmtr.linetool.tip"),
                             iconCls: "rmtr-line-select",
                             text: this.tr("rmtr.linetool"),
+                            iconAlign: "top",
+                            // check item options
+                            checked: false
+                        }),
+                        new GeoExt.Action({
+                            control: this._drawPolygonControl,
+                            map: this.map,
+                            // button options
+                            toggleGroup: this._toggleGroup,
+                            allowDepress: true,
+                            tooltip: this.tr("rmtr.polygontool.tip"),
+                            iconCls: "rmtr-polygon-select",
+                            text: this.tr("rmtr.polygontool"),
                             iconAlign: "top",
                             // check item options
                             checked: false
