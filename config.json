@@ -7,7 +7,7 @@
         "subject": "[RMTR] nouvelle demande",
         "template": "Bonjour,\n\n{first_name} {last_name} ({email} - {tel} - {service} - {company}) a effectué une demande d'extraction du RMTR.\nSous-sol: {underground}\nSurface: {aboveground}\n\nMotivations: {comment}\n\nLes tuiles concernées sont les suivantes: {tiles}",
         "layer": {
-            "service": "https://sdi.georchestra.org/geoserver/wms",
+            "service": "https://sdi.georchestra.org/geoserver/ows",
             "name": "ci:adminVectorLayer",
             "format": "image/png",
             "fields": [{

@@ -17,12 +17,16 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
     records: null,
     _up: false,
     _vectorLayer: null,
+    _drawLayer: null,
     _sfControl: null,
     _store: null,
     _cardPanel: null,
     _formAction: null,
     _removeRecordsBtn: null,
     _gfiControl: null,
+    attributeStore: null,
+    _geometryName: null,
+    protocol: null,
 
     /**
      * Method: init
@@ -33,7 +37,39 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
     init: function(record) {
         this.records = [];
         this._toggleGroup= "_rmtr_addon";
-
+        var pseudoRecord = {
+            typeName: this.options.layer.name,
+            owsURL: this.options.layer.service
+        };
+        this.attributeStore = GEOR.ows.WFSDescribeFeatureType(pseudoRecord, {
+            extractFeatureNS: true,
+            success: function() {
+                // we get the geometry column name
+                var idx = this.attributeStore.find("type", GEOR.ows.matchGeomProperty);
+                if (idx > -1) {
+                    // we have a geometry
+                    var r = this.attributeStore.getAt(idx),
+                        geometryName = r.get("name");
+                    // create the protocol:
+                    this.protocol = GEOR.ows.WFSProtocol(pseudoRecord, this.map, {
+                        geometryName: geometryName
+                    });
+                    this._geometryName = geometryName;
+                    // remove geometry from attribute store:
+                    //this.attributeStore.remove(r);
+                } else {
+                    GEOR.util.infoDialog({
+                        msg: this.tr("querier.layer.no.geom")
+                    });
+                }
+            },
+            failure: function() {
+                GEOR.util.errorDialog({
+                    msg: this.tr("querier.layer.error")
+                });
+            },
+            scope: this
+        });
         this._vectorLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id"), {
             displayInLayerSwitcher: false,
             styleMap: GEOR.util.getStyleMap({
@@ -47,6 +83,13 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             }),
             rendererOptions: {
                 zIndexing: true
+            }
+        });
+        this._drawLayer = new OpenLayers.Layer.Vector("__georchestra_"+record.get("id")+"_draw", {
+            displayInLayerSwitcher: false,
+            eventListeners: {
+                "sketchcomplete": this._onSketchComplete,
+                scope: this
             }
         });
         // create select feature control (used by selection model)
@@ -90,7 +133,6 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         this._store = new GeoExt.data.FeatureStore({
             layer: this._vectorLayer,
             fields: storeFields,
-            initDir: GeoExt.data.FeatureStore.STORE_TO_LAYER,
             listeners: {
                 "load": this._onStoreCountChanged,
                 "remove": this._onStoreCountChanged,
@@ -121,6 +163,46 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 }
             });
         }
+    },
+
+    /**
+     * Method: _onSketchComplete
+     * Callback on sketch completed
+     */
+    _onSketchComplete: function(o) {
+        var geom = o.feature.geometry.clone();
+        // remove drawn feature:
+        this._drawLayer.destroyFeatures([o.feature]);
+        if (!this.protocol || !this._geometryName) {
+            return;
+        }
+        var filter = new OpenLayers.Filter.Spatial({
+            type: OpenLayers.Filter.Spatial.INTERSECTS,
+            property: this._geometryName,
+            value: geom
+        });
+        // WFS GetFeature request intersecting current geometry
+        this.protocol.read({
+            maxFeatures: GEOR.config.MAX_FEATURES,
+            propertyNames: this.attributeStore.collect("name"),
+            filter: filter,
+            callback: function(response) {
+                if (!response.success()) {
+                    return;
+                }
+                // do not load features twice:
+                var idField = this.options.layer.fields[0].name,
+                    featuresToLoad = [];
+                Ext.each(response.features, function(f) {
+                    if (this._store.find(idField, f.data[idField]) == -1) {
+                        featuresToLoad.push(f);
+                    }
+                }, this);
+                // push to store:
+                this._store.loadData(featuresToLoad, true);
+            },
+            scope: this
+        });
     },
 
     /**
@@ -175,6 +257,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         this.map.removeControl(this._sfControl);
         this.map.removeControl(this._gfiControl);
         this.map.removeLayer(this._vectorLayer);
+        this.map.removeLayer(this._drawLayer);
         this.mapPanel.layers.remove(this.layerRecord);
         Ext.each(this.records, function(r) {
             this.mapPanel.layers.remove(r);
@@ -269,6 +352,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         // add vector layer + control first:
         // (they are required for the GeoExt.grid.FeatureSelectionModel)
         this.map.addLayer(this._vectorLayer);
+        this.map.addLayer(this._drawLayer);
         this.map.addControl(this._sfControl);
         // reset form action state:
         this._formAction.setText(this.tr("rmtr.showform"));
@@ -286,6 +370,12 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 scope: this
             }
         });
+        this._drawLineControl = new OpenLayers.Control.DrawFeature(this._drawLayer, OpenLayers.Handler.Path, {
+            eventListeners: {
+                "activate": this._showGridCard,
+                scope: this
+            }
+        })
         var columns = [];
         Ext.each(this.options.layer.fields, function(f) {
             var c = {
@@ -339,6 +429,19 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                             tooltip: this.tr("rmtr.selecttool.tip"),
                             iconCls: "rmtr-select",
                             text: this.tr("rmtr.selecttool"),
+                            iconAlign: "top",
+                            // check item options
+                            checked: false
+                        }),
+                        new GeoExt.Action({
+                            control: this._drawLineControl,
+                            map: this.map,
+                            // button options
+                            toggleGroup: this._toggleGroup,
+                            allowDepress: true,
+                            tooltip: this.tr("rmtr.linetool.tip"),
+                            iconCls: "rmtr-line-select",
+                            text: this.tr("rmtr.linetool"),
                             iconAlign: "top",
                             // check item options
                             checked: false
@@ -522,10 +625,12 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 columns: 1,
                 items: [{
                     boxLabel: this.tr("rmtr.form.aboveground"),
-                    name: "aboveground"
+                    name: "aboveground",
+                    inputValue: "true"
                 }, {
                     boxLabel: this.tr("rmtr.form.underground"),
-                    name: "underground"
+                    name: "underground",
+                    inputValue: "true"
                 }]
             }
         ];

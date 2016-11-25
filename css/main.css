@@ -10,6 +10,10 @@
   background-image: url("../img/marker.png") !important;
 }
 
+.rmtr-line-select {
+  background-image: url("../img/line.png") !important;
+}
+
 .rmtr-form {
   background-image: url("../img/email_go.png") !important;
 }
