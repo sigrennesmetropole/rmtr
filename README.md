@@ -5,7 +5,7 @@ Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant 
 
 Authors: @fvanderbiest
 
-Compatibility: geOrchestra >= 16.12
+Compatibility: geOrchestra >= 16.12 (due to a dependency on the [/ldapadmin/emailProxy service](https://github.com/georchestra/georchestra/pull/1572))
 
 Example addon config:
 
@@ -15,6 +15,11 @@ Example addon config:
     "name": "RMTR",
     "options": {
         "target": "tbar_12",
+        "subject": "[RMTR] nouvelle demande",
+        "to": ["oneguy@sig.rennesmetropole.fr"],
+        "cc": ["anotherguy@rennesmetropole.fr"],
+        "bcc": ["somebcc@rennesmetropole.fr"],
+        "template": "Bonjour,\n\n{first_name} {last_name} ({email} - {tel} - {service} - {company}) a effectué une demande d'extraction du RMTR.\nSous-sol: {underground}\nSurface: {aboveground}\n\nMotivations: {comment}\n\nLes tuiles concernées sont les suivantes: {tiles}",
         "layer": {
             "service": "https://portail-test.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
             "name": "toposurf_rctr_carroyage",

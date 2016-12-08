@@ -35,7 +35,8 @@
             "rmtr.form.comments": "Motivation - Projet",
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
-            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
+            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
+            "rmtr.request.sent": "Requête envoyée"
         },
         "es": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -62,7 +63,8 @@
             "rmtr.form.comments": "Motivation - Projet",
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
-            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
+            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
+            "rmtr.request.sent": "Requête envoyée"
         },
         "fr": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -89,7 +91,8 @@
             "rmtr.form.comments": "Motivation - Projet",
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
-            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
+            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
+            "rmtr.request.sent": "Requête envoyée"
         },
         "de": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -116,7 +119,8 @@
             "rmtr.form.comments": "Motivation - Projet",
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
-            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :"
+            "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
+            "rmtr.request.sent": "Requête envoyée"
         }
     }
 }

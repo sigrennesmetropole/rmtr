@@ -573,19 +573,30 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         if (!form.isValid()) {
             return;
         }
-        var v = form.getValues();
+        var v = form.getValues(),
+            o = this.options;
         v.tiles = this.store.collect(this.options.layer.fields[0].name).join(', ');
         var spec = {
-            "subject": this.options.subject,
-            "body": new Ext.XTemplate(this.options.template).apply(v)
+            "subject": o.subject,
+            "body": new Ext.XTemplate(o.template).apply(v)
         };
+        if (o.to && o.to[0]) {
+            spec.to = o.to;
+        }
+        if (o.cc && o.cc[0]) {
+            spec.cc = o.cc;
+        }
+        if (o.bcc && o.bcc[0]) {
+            spec.bcc = o.bcc;
+        }
         GEOR.waiter.show();
         OpenLayers.Request.POST({
-            url: GEOR.config.PATHNAME + "/ws/email/",
+            url: "/ldapadmin/emailProxy",
             data: new OpenLayers.Format.JSON().write(spec),
             success: function(response) {
-                // TODO
-                alert("C'est parti mon kiki");
+                GEOR.util.infoDialog({
+                    msg: this.tr("rmtr.request.sent")
+                });
             },
             scope: this
         });
