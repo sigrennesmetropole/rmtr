@@ -590,13 +590,20 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             spec.bcc = o.bcc;
         }
         GEOR.waiter.show();
-        OpenLayers.Request.POST({
+        Ext.Ajax.request({
             url: "/ldapadmin/emailProxy",
-            data: new OpenLayers.Format.JSON().write(spec),
+            method: 'POST',
+            jsonData: spec,
+            headers: {
+                "Content-Type": "application/json"
+            },
             success: function(response) {
                 GEOR.util.infoDialog({
                     msg: this.tr("rmtr.request.sent")
                 });
+            },
+            failure: function(response) {
+                alert("Could not send request, please contact your administrator.");
             },
             scope: this
         });
