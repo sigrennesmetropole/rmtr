@@ -601,6 +601,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 GEOR.util.infoDialog({
                     msg: this.tr("rmtr.request.sent")
                 });
+                this.window.hide();
             },
             failure: function(response) {
                 alert("Could not send request, please contact your administrator.");
