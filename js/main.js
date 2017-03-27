@@ -568,9 +568,10 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
             return;
         }
         var v = form.getValues(),
-            o = this.options;
-        v.tiles = this.store.collect(this.options.layer.fields[0].name).join(', ');
-        v.count = v.tiles.length;
+            o = this.options,
+            tilesArray = this.store.collect(this.options.layer.fields[0].name);
+        v.tiles = tilesArray.join(', ');
+        v.count = tilesArray.length;
         var spec = {
             "subject": new Ext.XTemplate(o.subject).apply(v),
             "body": new Ext.XTemplate(o.template).apply(v)
