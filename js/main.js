@@ -3,12 +3,6 @@
  */
 Ext.namespace("GEOR.Addons");
 
-/*
-TODO:
- * template mail (?)
- * mailto (?)
-*/
-
 GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
 
     window: null,
@@ -576,8 +570,9 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         var v = form.getValues(),
             o = this.options;
         v.tiles = this.store.collect(this.options.layer.fields[0].name).join(', ');
+        v.count = v.tiles.length;
         var spec = {
-            "subject": o.subject,
+            "subject": new Ext.XTemplate(o.subject).apply(v),
             "body": new Ext.XTemplate(o.template).apply(v)
         };
         if (o.to && o.to[0]) {

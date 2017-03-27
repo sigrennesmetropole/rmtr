@@ -4,7 +4,7 @@
     "name": "RMTR",
     "options": {
         "target": "tbar_12",
-        "subject": "[RMTR] nouvelle demande",
+        "subject": "[RMTR] nouvelle demande concernant {count} tuiles",
         "to": ["oneguy@sig.rennesmetropole.fr"],
         "cc": ["anotherguy@rennesmetropole.fr"],
         "bcc": ["somebcc@rennesmetropole.fr"],
