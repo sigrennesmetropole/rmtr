@@ -1,7 +1,7 @@
 RMTR
 ======
 
-Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/) permettant la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux de Rennes Métropole.
+Addon pour le visualiseur [geOrchestra](http://www.georchestra.org/). Il permet de formuler des demandes d'extraction de données par la sélection de carreaux. Un courriel est envoyé à un opérateur qui se charge de l'extraction dans un deuxième temps.
 
 Authors: @fvanderbiest
 
@@ -15,14 +15,14 @@ Example addon config:
     "name": "RMTR",
     "options": {
         "target": "tbar_12",
-        "subject": "[RMTR] nouvelle demande",
-        "to": ["oneguy@sig.rennesmetropole.fr"],
-        "cc": ["anotherguy@rennesmetropole.fr"],
-        "bcc": ["somebcc@rennesmetropole.fr"],
+        "subject": "[RMTR] nouvelle demande concernant {count} tuiles",
+        "to": ["operator@mycompany.fr"],
+        "cc": ["chief@mycompany.fr"],
+        "bcc": ["somebcc@mycompany.fr"],
         "template": "Bonjour,\n\n{first_name} {last_name} ({email} - {tel} - {service} - {company}) a effectué une demande d'extraction du RMTR.\nSous-sol: {underground}\nSurface: {aboveground}\n\nMotivations: {comment}\n\nLes tuiles concernées sont les suivantes: {tiles}",
         "layer": {
-            "service": "https://portail-test.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
-            "name": "toposurf_rctr_carroyage",
+            "service": "https://public.sig.rennesmetropole.fr/geoserver/ref_topo/wms",
+            "name": "rmtr_surf_carroyage",
             "format": "image/png",
             "fields": [{
                 "name": "cases_200",
@@ -52,10 +52,10 @@ Example addon config:
         "de": "RMTR"
     },
     "description": {
-        "en": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
-        "fr": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
-        "es": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux",
-        "de": "Cet addon permet la visualisation et l'extraction des données du Référentiel Métropolitain Topographie et Réseaux"
+        "en": "This addon allows to formulate requests for data extraction.",
+        "fr": "Cet addon permet permet de formuler des demandes d'extraction de données.",
+        "es": "Esto permite complemento permite hacer solicitudes de recuperación de datos.",
+        "de": "Dieses Add-on ermöglicht es ermöglicht Anfragen für den Datenabruf zu machen."
     }
 }]
 ```
