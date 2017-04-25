@@ -54,7 +54,7 @@ Example addon config:
     "description": {
         "en": "This addon allows to formulate requests for data extraction.",
         "fr": "Cet addon permet permet de formuler des demandes d'extraction de données.",
-        "es": "Esto permite complemento permite hacer solicitudes de recuperación de datos.",
+        "es": "Esta herramienta permite hacer solicitudes de recuperación de datos.",
         "de": "Dieses Add-on ermöglicht es ermöglicht Anfragen für den Datenabruf zu machen."
     }
 }]
