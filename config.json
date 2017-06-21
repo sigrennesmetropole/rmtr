@@ -4,6 +4,7 @@
     "name": "RMTR",
     "options": {
         "target": "tbar_12",
+        "maxTiles": 50,
         "subject": "[RMTR] nouvelle demande concernant {count} dalles",
         "to": ["operator@mycompany.fr"],
         "cc": ["chief@mycompany.fr"],

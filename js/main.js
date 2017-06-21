@@ -192,8 +192,14 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                         featuresToLoad.push(f);
                     }
                 }, this);
-                // push to store:
-                this.store.loadData(featuresToLoad, true);
+                if (this.store.getCount() + featuresToLoad.length <= this.options.maxTiles) {
+                    // push to store:
+                    this.store.loadData(featuresToLoad, true);
+                } else {
+                    GEOR.util.infoDialog({
+                        msg: this.tr("rmtr.toomanytiles")
+                    });
+                }
             },
             scope: this
         });
@@ -306,8 +312,14 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
                 });
             }
         }
-        // append features to store:
-        this.store.loadData(o.features, true);
+        if (this.store.getCount() + o.features.length <= this.options.maxTiles) {
+            // append features to store:
+            this.store.loadData(o.features, true);
+        } else {
+            GEOR.util.infoDialog({
+                msg: this.tr("rmtr.toomanytiles")
+            });
+        }
     },
 
     /**

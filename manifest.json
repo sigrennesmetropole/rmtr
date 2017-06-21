@@ -6,6 +6,7 @@
         "css/main.css"
     ],
     "default_options": {
+        "maxTiles": 50,
         "subject": "[RMTR] nouvelle demande concernant {count} dalles",
         "template": "Bonjour,\n\n{first_name} {last_name} ({email} - {tel} - {service} - {company}) a effectué une demande d'extraction du RMTR.\nSous-sol: {underground}\nSurface: {aboveground}\n\nMotivations: {comment}\n\nLes dalles concernées sont les suivantes: {tiles}"
     },
@@ -36,7 +37,8 @@
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
-            "rmtr.request.sent": "Requête envoyée"
+            "rmtr.request.sent": "Requête envoyée",
+            "rmtr.toomanytiles": "La limite de commande est dépassée !"
         },
         "es": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -64,7 +66,8 @@
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
-            "rmtr.request.sent": "Requête envoyée"
+            "rmtr.request.sent": "Requête envoyée",
+            "rmtr.toomanytiles": "La limite de commande est dépassée !"
         },
         "fr": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -92,7 +95,8 @@
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
-            "rmtr.request.sent": "Requête envoyée"
+            "rmtr.request.sent": "Requête envoyée",
+            "rmtr.toomanytiles": "La limite de commande est dépassée !"
         },
         "de": {
             "rmtr.window.title": "Extraction de données du RMTR",
@@ -120,7 +124,8 @@
             "rmtr.form.aboveground": "Données de surface",
             "rmtr.form.underground": "Données de sous-sol",
             "rmtr.form.textabove": "Veuillez compléter le formulaire suivant :",
-            "rmtr.request.sent": "Requête envoyée"
+            "rmtr.request.sent": "Requête envoyée",
+            "rmtr.toomanytiles": "La limite de commande est dépassée !"
         }
     }
 }
