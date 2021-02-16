@@ -599,7 +599,7 @@ GEOR.Addons.RMTR = Ext.extend(GEOR.Addons.Base, {
         }
         GEOR.waiter.show();
         Ext.Ajax.request({
-            url: "/ldapadmin/emailProxy",
+            url: "/console/emailProxy",
             method: 'POST',
             jsonData: spec,
             headers: {
